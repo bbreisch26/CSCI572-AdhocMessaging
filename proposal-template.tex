@@ -2,6 +2,7 @@
 \usepackage{verbatim}
 \usepackage{multirow}
 \usepackage{fullpage}
+\usepackage{graphicx}
 
 \pagestyle{plain}
 
@@ -30,22 +31,28 @@ If I want to send a message to my friend in the next room over, it must travel m
 \section{Approach} %(optional)
 %    \item Rationale: Why is it a good idea?
    %     \item Sketch of your approach and design.
-   Wireframe?
-   Network/Explanation Diagram?
+   Mobile app development, especially for Android, has an extremely wide range of resources on the Internet. The Android platform is well supported by the community and we plan to leverage online reousrces for the development of this app. For our mobile app to function properly, we will need mock ups of different pages and screens. In the User Interface / User Experience (UI/UX) industry, these are called wireframes. We have created two wireframes, each showing the sign-in page and the messaging page of the application respectively. The wireframes were created in a free tool called WonderShare and are shown in the image below. \\
+   \begin{center}
+   \includegraphics[scale=0.5]{wireframe.png} \\
+   \end{center}
+   Behind the scenes, this application will use a complex set of functions and internal storage structures. Devices will periodically broadcast beacon frames with routing information, tagged with usernames for each device. This technique is essentially a fusion of AODV and DSDV routing. When the app is open on a device, it will listen for these beacon frames and update its routing table accordingly. If a device receives a frame destined for a different host, it will look up the host in its routing table and determine if it is reachable, forwarding the packet along if it is. When a frame is received at the destination host, it will detect errors with a checksum or CRC32 and reply with an ACK. Messages will be limited to 1024 characters in order to cut down on network latency and reduce packet loss. Conversations between users will be stored on the device.
+   
 \section{Evaluation Plan}
 %      \item What experiments are you going to run?
    %   \item What criteria and metrics are you going to use to evaluate your solutions?
    Criteria:
     
 \section{Milestones} %(with dates)
-
-
+The table below describes the milestones and associated due dates for each.
 \begin{center}
 \begin{tabular}{ |c|c|c| }
 \hline
- Milestone & Explanation & Due Date \\ \hline
- cell4 & cell5 & cell6 \\  
- Final Report & Final report in IEEE conference paper format due & Nov 22, 2023   \\
+ Milestone & Explanation \\ \hline
+ Install Development Tools &  Oct 14, 2023 \\
+ Initial Implementation & Oct 21, 2023 \\
+ Begin Final Report Writing & Nov 1, 2023 \\ 
+ Finish App Implementation & Nov 15,2023 \\
+ Final Report Due & Nov 22, 2023   \\
  \hline
 \end{tabular}
 \end{center}
