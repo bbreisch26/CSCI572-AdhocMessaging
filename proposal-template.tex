@@ -16,7 +16,22 @@
 \section{Introduction}
 % Motivate the problem;
 % Define/formulate the problem: assumptions, application requirements, goals and non-goals;
-If I want to send a message to my friend in the next room over, it must travel much farther than the distance between us. Messages sent through SMS or Apple's iMessage must travel from the originating device through a series of intermediate infrastructure nodes before reaching the destination device. This is an issue for both latency and network congestion. In an increasingly connected (and congested) world - why bother wasting bandwidth on a message to a nearby device that can be sent directly from peer to peer? We aim to solve this issue by proposing and developing a peer-to-peer messaging app for Android using Wi-Fi Direct for multi-hop ad-hoc networking. Although security is always an issue with wireless communication, that is out of the scope of this project.
+If someone wants to send a message to a friend nearby, the message must travel much farther than the distance between devices. Messages sent through SMS or Apple's iMessage must travel from the originating device through a series of intermediate infrastructure nodes before reaching the destination device. This causes increased latency and unnecessary network overhead. In an increasingly connected (and congested) world - why bother wasting bandwidth on a message to a nearby device that can be sent directly from peer to peer? We aim to solve this issue by proposing and developing a peer-to-peer messaging app for Android using Wi-Fi Direct for multi-hop ad-hoc networking. An application of this nature has far-reaching applications from messaging and networking at an event r conference to emergency communication during a natural disaster. Although security is always an issue with wireless communication, that is out of the scope of this project. The table below shows some preliminary requirements for this proposed solution.
+\begin{center}
+\begin{tabular}{| p{0.2\textwidth} | p{0.5\textwidth} |} 
+ \hline
+ Category & Requirement \\ \hline
+ Networking & Connections between two devices shall use Wi-Fi Direct using the Android Wi-Fi P2P API  \\ \hline
+ Networking & Devices shall provide routing of messages between source and destination nodes using an ad-hoc routing protocol  \\ \hline
+  Networking & Devices shall provide acknowledgements when messages are received in order to ensure message delivery  \\ \hline
+ User Experience  & Users shall be able to send text and file messages \\ \hline
+ User Experience  & Latency shall be minimized as much as possible when sending messages (ideally within 1 second) \\ \hline
+ User Experience  & Devices shall save messages offline such that they can be viewed later \\ \hline
+ User Experience  & Devices shall show a contact list of other nearby users that a user can start a conversation with \\ \hline
+ User Experience  & Devices shall show a contact list of other nearby users that a user can start a conversation with \\ \hline
+\end{tabular}
+\end{center}
+
 \section{Related work}
    %\item What has been done before?
     %\item How does your solution compare to them?
@@ -31,7 +46,7 @@ If I want to send a message to my friend in the next room over, it must travel m
 \section{Approach} %(optional)
 %    \item Rationale: Why is it a good idea?
    %     \item Sketch of your approach and design.
-   Mobile app development, especially for Android, has an extremely wide range of resources on the Internet. The Android platform is well supported by the community and we plan to leverage online reousrces for the development of this app. For our mobile app to function properly, we will need mock ups of different pages and screens. In the User Interface / User Experience (UI/UX) industry, these are called wireframes. We have created two wireframes, each showing the sign-in page and the messaging page of the application respectively. The wireframes were created in a free tool called WonderShare and are shown in the image below. \\
+   Mobile app development, especially for Android, has an extremely wide range of resources on the Internet. The Android platform is well supported by the community and we plan to leverage online reousrces for the development of this app. Android provides an existing Wi-Fi Direct library that we will leverage to speed up development. We will develop this app using Android's Studio Software Development Kit in Java. For our mobile app to function properly, we will need mock ups of different pages and screens. In the User Interface / User Experience (UI/UX) industry, these are called wireframes. We have created three wireframes, each showing the sign-in page, nearby users, and the messaging page of the application respectively. The wireframes were created in a free tool called WonderShare and are shown in the image below. These wireframes will guide development of the user interface.\\
    \begin{center}
    \includegraphics[scale=0.5]{wireframe.png} \\
    \end{center}
