@@ -47,21 +47,21 @@ We aim to differ from this product in several regards:
 \begin{enumerate}
     \item We primarily aim to support messaging. Having file sharing as a back end is a possible implementation to build messaging on, but would need to be extended.
     \item AirDrop uses iCloud services in order to authenticate users, and additionally only works on Apple devices. We aim to create a de-centralized version that
-    could theoretically be deployed on any platform (although we are only developing the application for Android in the scope of this project).
+          could theoretically be deployed on any platform (although we are only developing the application for Android in the scope of this project).
     \item AirDrop uses a combination of point-to-point WiFi connections and bluetooth. We aim to only use ad hoc wifi / wifi direct in our implementation. We realize
-    that the technology choice restricts what devices we can connect with (Apple does not support WiFi direct).
+          that the technology choice restricts what devices we can connect with (Apple does not support WiFi direct).
 \end{enumerate}
 
 \subsection{Warpinator}
 
 Warpinator is a file sharing system devloped by the Linux Mint team in order to create an air-drop like file-sharing system for non-apple users. It operates over
-LAN, and supports Android, iOS, Windows, and Linux, and could likely be easily ported to other Unix like systems. 
+LAN, and supports Android, iOS, Windows, and Linux, and could likely be easily ported to other Unix like systems.
 
 We aim to differ from this product in two regards:
 \begin{enumerate}
     \item As in AirDrop, we primarily aim to support messaging
     \item Operate using ad hoc networking to support messaging. Warpinator requires a connection to an existing routed network, and can not operate its own ad hoc
-    network.
+          network.
 \end{enumerate}
 
 \subsection{Android Beam}
@@ -75,7 +75,7 @@ We aim to differ from this product in two regards:
     \item We are creating an application, rather than an open interface to communicate over.
 \end{enumerate}
 
-
+\newpage
 % There are some existing apps available for Android and iOS. Many of these apps use Bluetooth
 % https://engage.sinch.com/blog/offline-messaging-apps/ \\
 % https://apps.apple.com/us/app/walkie-talkie-p2p/id1181349764 \\
@@ -92,6 +92,8 @@ Mobile app development, especially for Android, has an extremely wide range of r
     \includegraphics[scale=0.5]{wireframe.png} \\
 \end{center}
 Behind the scenes, this application will use a complex set of functions and internal storage structures. Devices will periodically broadcast beacon frames with routing information, tagged with usernames for each device. This technique is essentially a fusion of AODV and DSDV routing. When the app is open on a device, it will listen for these beacon frames and update its routing table accordingly. If a device receives a frame destined for a different host, it will look up the host in its routing table and determine if it is reachable, forwarding the packet along if it is. When a frame is received at the destination host, it will detect errors with a checksum or CRC32 and reply with an ACK. Messages will be limited to 1024 characters in order to cut down on network latency and reduce packet loss. Conversations between users will be stored on the device.
+
+\newpage
 
 \section{Evaluation Plan}
 %      \item What experiments are you going to run?
@@ -148,6 +150,8 @@ Scalability is the next concern. If users can't send or receive messages in a cr
 Since our app sends messages locally to a destination, rather than traveling through a complex network of infrastructure nodes, users will expect it to be very quick. Therefore, low latency is also a requirement. Nobody likes to wait for something as simple as a message to send. Especially when some conversations are time sensitive. So the text messages themselves should send very quickly, with a small wait required for larger files.
 Finally, messages need to be delivered. When a user sends a message they expect it to actually reach the destination. If that promise isn't upheld then that can cause confusion and frustration amongst users. If the destination is unreachable then the sending user needs to be alerted of this. This is a potential problem for our app as users could be hopping on and off the app at a rapid pace.
 
+\newpage
+
 \section{Milestones} %(with dates)
 The table below describes the milestones and associated due dates for each.
 \begin{center}
@@ -162,6 +166,8 @@ The table below describes the milestones and associated due dates for each.
         \hline
     \end{tabular}
 \end{center}
+
+\newpage
 
 \bibliographystyle{plain}
 \bibliography{references.bib}
