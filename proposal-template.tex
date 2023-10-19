@@ -132,7 +132,7 @@ We plan to do all of our evaluation and experimentation on live devices. One of 
     \item Maximum distance
 \end{itemize}
 
-The single-hop communication experiments will be performed with two devices which will have a single connection between them. The multi-hop communication experiments will use at least three devices and test the routing capabilities of the app. We will also test how quickly our solution can adapt to topology changes such as users opening the app or closing the app. That in particular is especially important since people are rarely just using a single app continuously. Typical users will flip quickly between several different apps while using their phone or device. Additionally, we will test the impact of high paced usage on network performance. Some users send messages back and forth as fast as their fingers can type and even do that with multiple different contacts. Most messaging apps allow for users to send each other multimedia messages or files such as photos and videos. So that capability will be tested as well. Finally, it is always important to study how the physical environment will impact performance. So we will run these experiments at a close distance range and then push it as high as we can go. All of these scenarios will be combined into an array of experiments that we can use to fully capture the performance of our app.
+The single-hop communication experiments will be performed with two devices which will have a single connection between them. The multi-hop communication experiments will use at least three devices and test the routing capabilities of the app. We will also test how quickly our solution can adapt to topology changes such as users opening the app or closing the app. That in particular is especially important since people are rarely just using a single app continuously. Typical users will flip quickly between several different apps while using their phone or device. Additionally, we will test the impact of high paced usage on network performance. Some users send messages back and forth as fast as their fingers can type and even do that with multiple different contacts. Most messaging apps also allow for users to send each other multimedia messages or files such as photos and videos. So that capability will be tested as well. Finally, it is always important to study how the physical environment will impact performance. So we will run these experiments at a close distance range and then push it as high as we can go. All of these scenarios will be combined into an array of experiments that we can use to fully capture the performance of our app.
 
 %   \item What criteria and metrics are you going to use to evaluate your solutions?
 \subsection{Metrics}
@@ -147,9 +147,9 @@ The throughput in this case is simply the data transmission rate throughout the 
 
 \subsection{Criteria}
 
-There are two key results we are looking for by performing these experiments. The first is comparing our app to other existing solutions. We want to see if our approach of using WiFi-Direct performs better or worse than the typical Bluetooth approach. Furthermore, we want to analyze specific areas and metrics so as to conclude the pros and cons of the different technologies. The second result is if our solution meets the user's needs. Does it have the necessary throughput, latency, and reliability to provide a good experience for the casual user? That result will tell us whether or not our solution is usable and functional for the problem.
+There are two key results we are looking for by performing these experiments. The first is comparing our app to other existing solutions. We want to see if our approach of using WiFi-Direct performs better or worse than the approaches detailed in the related work section. Furthermore, we want to analyze specific areas and metrics so as to conclude the pros and cons of the different technologies. The second result is if our solution meets the user's needs. Does it have the necessary throughput, latency, and reliability to provide a good experience for the casual user? That result will tell us whether or not our solution is usable and functional for the problem.
 
-The criteria for our first result is fairly straightforward. We will simply compare our recorded metrics directs against the best existing solution we can find. This will allow us to compare and contrast the different approaches directly. In contrast, the criteria for our second result is much less straightforward. There is no benchmark for the minimum performance required on a messaging app. So we will evaluate the app against our own defined criteria of what is needed for a "good user experience".
+The criteria for our first result is fairly straightforward. We will simply compare our recorded metrics directs against the best existing solution we can find. This will allow us to compare and contrast the different approaches directly. On the other hand, the criteria for our second result is much less straightforward. There is no benchmark for the minimum performance required on a messaging app. So we will evaluate the app against our own defined criteria of what is needed for a "good user experience".
 
 These soft criteria are as follows:
 \begin{itemize}
@@ -186,7 +186,7 @@ The table below describes the milestones and associated due dates for each.
 \end{center}
 
 
-\bibliographystyle{plain}
+\bibliographystyle{acm}
 \bibliography{refs}{}
 
 \end{document}
