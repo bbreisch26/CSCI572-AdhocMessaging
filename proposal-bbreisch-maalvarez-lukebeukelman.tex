@@ -30,7 +30,6 @@ If someone wants to send a message to a friend nearby, the message must travel m
         User Experience & Latency shall be minimized as much as possible when sending messages (ideally within 1 second)                  \\ \hline
         User Experience & Devices shall save messages offline such that they can be viewed later                                          \\ \hline
         User Experience & Devices shall show a contact list of other nearby users that a user can start a conversation with               \\ \hline
-        User Experience & Devices shall show a contact list of other nearby users that a user can start a conversation with               \\ \hline
     \end{tabular}
 \end{center}
 
@@ -163,7 +162,7 @@ These soft criteria are as follows:
     \item Reliable delivery, data gets delivered unless destination is unreachable.
 \end{itemize}
 These are the basic requirements for any messaging app to be useful. If any one of these are missing then the user experience is miserable.
-A messaging app needs to keep up with even the fastest typer. We can put a character limit to restrict total message size, but that wouldn't stop a user from sending many large messages in quick succession. Therefore, it is important that the app can handle such usage. One speedy user shouldn't be able to cause themselves or other users to experience delay. We will need to find out how fast a person can send out messages at maximum and then use that as a throughput threshold for how fast our app needs to be.
+A messaging app needs to keep up with even the fastest typer. We can put a character limit to restrict total message size, but that wouldn't stop a user from sending many large messages in quick succession. Therefore, it is important that the app can handle such usage. One speedy user shouldn't be able to cause network delay. We will need to find out how fast a person can send out messages and then use that as a throughput threshold for app speed.
 
 Scalability is the next concern. If users can't send or receive messages in a crowded environment then the app is not very useful. Settings such as a school, apartment complex, or office may have many participating users trying to use the app at once. More participating devices in the network obviously increases the total network bandwidth, but does that increase in bandwidth outpace the increase in required throughput? We don't have the equipment required to test a truly large scale deployment of our app, but we can still analyze the impact of more participating devices. Then by weighing the increase in both bandwidth and throughput, we can estimate how well the application will scale.
 
