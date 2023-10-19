@@ -3,6 +3,7 @@
 \usepackage{multirow}
 \usepackage{fullpage}
 \usepackage{graphicx}
+\usepackage{parskip}
 
 \pagestyle{plain}
 
@@ -11,6 +12,7 @@
 \date{October 9th 2023}
 
 \begin{document}
+
 \maketitle
 
 \section{Introduction}
@@ -41,7 +43,7 @@ If someone wants to send a message to a friend nearby, the message must travel m
 \subsection{AirDrop}
 
 When it comes to ad hoc networking on mobile devices, AirDrop is probably to most widespread application. It supports sending files to nearby devices, without
-requiring devices to be connected to the same network. AirDrop operates using both wifi and bluetooth.
+requiring devices to be connected to the same network. AirDrop operates using both wifi and bluetooth \cite{AppleSupport}.
 
 We aim to differ from this product in several regards:
 \begin{enumerate}
@@ -54,7 +56,7 @@ We aim to differ from this product in several regards:
 
 \subsection{Warpinator}
 
-Warpinator is a file sharing system devloped by the Linux Mint team in order to create an air-drop like file-sharing system for non-apple users. It operates over
+Warpinator is a file sharing system devloped by the Linux Mint team in order to create an air-drop like file-sharing system for non-apple users  \cite{Webster2023linuxmint}. It operates over
 LAN, and supports Android, iOS, Windows, and Linux, and could likely be easily ported to other Unix like systems.
 
 We aim to differ from this product in two regards:
@@ -76,6 +78,20 @@ We aim to differ from this product in two regards:
 \end{enumerate}
 
 \newpage
+
+\subsection{A Totally Decentralized Document Sharing System for Mobile Ad Hoc Networks}
+This paper  \cite{10.1145/1164783.1164805} presents an application for sharing documents in MANETS. The application presented
+is completely unreliant on any form of centralized server or routing algorith. Documents can be shared in atomic components to different groups
+of nodes, and nodes can modify parts of a document, sharing a tree of the modifications. This application achieves a lot of what we are trying to
+do, except with more routing and versioning complexity than we are seeking. Our goal is simple messaging and possible document sharging with nearby
+nodes, not necessarily using MANET routing algorithms.
+
+We aim to differ from this product in two regards:
+\begin{enumerate}
+    \item Our solution aims to target simple messaging and file sharing, rather than the complex sharing and versioning that the application in the paper presents.
+    \item We don't intend to use complex routing algorithms such as those used in MANETS, our goal is short range communications within the range of a phones WiFi antenna.
+\end{enumerate}
+
 % There are some existing apps available for Android and iOS. Many of these apps use Bluetooth
 % https://engage.sinch.com/blog/offline-messaging-apps/ \\
 % https://apps.apple.com/us/app/walkie-talkie-p2p/id1181349764 \\
@@ -92,8 +108,6 @@ Mobile app development, especially for Android, has an extremely wide range of r
     \includegraphics[scale=0.5]{wireframe.png} \\
 \end{center}
 Behind the scenes, this application will use a complex set of functions and internal storage structures. Devices will periodically broadcast beacon frames with routing information, tagged with usernames for each device. This technique is essentially a fusion of AODV and DSDV routing. When the app is open on a device, it will listen for these beacon frames and update its routing table accordingly. If a device receives a frame destined for a different host, it will look up the host in its routing table and determine if it is reachable, forwarding the packet along if it is. When a frame is received at the destination host, it will detect errors with a checksum or CRC32 and reply with an ACK. Messages will be limited to 1024 characters in order to cut down on network latency and reduce packet loss. Conversations between users will be stored on the device.
-
-\newpage
 
 \section{Evaluation Plan}
 %      \item What experiments are you going to run?
@@ -150,8 +164,6 @@ Scalability is the next concern. If users can't send or receive messages in a cr
 Since our app sends messages locally to a destination, rather than traveling through a complex network of infrastructure nodes, users will expect it to be very quick. Therefore, low latency is also a requirement. Nobody likes to wait for something as simple as a message to send. Especially when some conversations are time sensitive. So the text messages themselves should send very quickly, with a small wait required for larger files.
 Finally, messages need to be delivered. When a user sends a message they expect it to actually reach the destination. If that promise isn't upheld then that can cause confusion and frustration amongst users. If the destination is unreachable then the sending user needs to be alerted of this. This is a potential problem for our app as users could be hopping on and off the app at a rapid pace.
 
-\newpage
-
 \section{Milestones} %(with dates)
 The table below describes the milestones and associated due dates for each.
 \begin{center}
@@ -170,7 +182,6 @@ The table below describes the milestones and associated due dates for each.
 \newpage
 
 \bibliographystyle{plain}
-\bibliography{references.bib}
-
+\bibliography{refs}{}
 
 \end{document}
