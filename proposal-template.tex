@@ -48,7 +48,7 @@ requiring devices to be connected to the same network. AirDrop operates using bo
 We aim to differ from this product in several regards:
 \begin{enumerate}
     \item We primarily aim to support messaging. Having file sharing as a back end is a possible implementation to build messaging on, but would need to be extended.
-    \item AirDrop uses iCloud services in order to authenticate users, and additionally only works on Apple devices. We aim to create a de-centralized version that
+    \item AirDrop uses iCloud services in order to authenticate users \cite{AppleSupportSecurity}, and additionally only works on Apple devices. We aim to create a de-centralized version that
           could theoretically be deployed on any platform (although we are only developing the application for Android in the scope of this project).
     \item AirDrop uses a combination of point-to-point WiFi connections and bluetooth. We aim to only use ad hoc wifi / wifi direct in our implementation. We realize
           that the technology choice restricts what devices we can connect with (Apple does not support WiFi direct).
@@ -67,7 +67,7 @@ We aim to differ from this product in two regards:
 \end{enumerate}
 
 \subsection{Android Beam}
-Android beam is a discontinued feature in Android that allowed data to be transfered over NFC. Unlike the prior two works, Android Beam did not only support file
+Android beam is a discontinued \cite{Cantisano_2022} feature in Android that allowed data to be transfered over NFC \cite{AndroidDevelopers}. Unlike the prior two works, Android Beam did not only support file
 transfer, and was an open interface that applications could use to communicate. Android Beam could provide a reasonable interface for a similar application as ours
 to communicate with, if it were not discontinued and limited to NFC.
 
