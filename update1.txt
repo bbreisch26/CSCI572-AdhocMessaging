@@ -16,3 +16,8 @@ transferring files. I determined that changing Warpinator to fit our needs would
 and began to look at other existing solutions for reference on how we could structure our own solution. I found several
 open source projects that we can look at in the next steps of our process.
 
+
+Ben Breisch: I took time to read through the Warpinator codebase and other publicly available Ad-Hoc messaging apps to get a better understanding of the problem.
+After researching, I added a skeleton wrapper to our repo with structure for WiFi-Direct API access. We will use this code to make send and receive data through the WiFi-Direct
+API. My tasks for next week is to develop the wireframes used in the report into layout files in Android Studio.
+
