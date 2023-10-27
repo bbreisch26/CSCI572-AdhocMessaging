@@ -1,3 +1,18 @@
 (1) Team progress compared to milestones:
+    As a team we collectively investigated existing Android apps like Warpinator (that was part of our related work section) 
+which used different wireless protocols. We wanted to see if we could take the UI and other code but just substitute 
+WiFi-Direct as the networking component of the app. We also investigated the Android WiFi Direct (peer-to-peer or P2P)
+API. Additionally, we all installed the Android SDK, Android Studio.
+
+    After looking into Warpinator we have decided to pivot and instead create our own application while using the existing
+solutions as references.
+
+Our original milestones say that we should already have completed our initial implementation, but we realize in retrospect that
+was perhaps too optimistic. So we are behind on our milestones but still making good progress.
 
 (2) Each team member's contribution:
+Michael Alvarez: I investigated Warpinator and what sections of the code depend on its current WiFi protocol for 
+transferring files. I determined that changing Warpinator to fit our needs would take a lot of work. So I pivoted
+and began to look at other existing solutions for reference on how we could structure our own solution. I found several
+open source projects that we can look at in the next steps of our process.
+
