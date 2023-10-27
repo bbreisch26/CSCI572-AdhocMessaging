@@ -21,3 +21,5 @@ Ben Breisch: I took time to read through the Warpinator codebase and other publi
 After researching, I added a skeleton wrapper to our repo with structure for WiFi-Direct API access. We will use this code to make send and receive data through the WiFi-Direct
 API. My tasks for next week is to develop the wireframes used in the report into layout files in Android Studio.
 
+Luke Beukelman: I set up a warpinator app for us to investigate into, and begun some initla investigation into it.
+I set up for Android development with Android studio and begun looking into the Android SDK.
