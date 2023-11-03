@@ -1,0 +1,10 @@
+(1) Team progress compared to milestones:
+This week we started doing application development. We are continuing to work on getting the skeleton of the app set up, and aim to have that done by next week.
+
+(2) Each team member's contribution:
+Michael Alvarez: 
+
+
+Ben Breisch: 
+
+Luke Beukelman: I've continues to look into WiFi direct in Android, and have started to add bits and pieces to the application.
