@@ -1,8 +1,15 @@
 (1) Team progress compared to milestones:
-This week we started doing application development. We are continuing to work on getting the skeleton of the app set up, and aim to have that done by next week.
+This week we started doing application development. We are continuing to work on getting the skeleton of the app set
+up, and aim to have that done by next week. This week we laid a lot of good groundwork in the front and back end of
+the application but now we need to start hooking the pieces together and test on live hardware since the emulator
+doesn't work with testing WiFi-Direct related functionality.
+
+We are still behind our original milestones but feel that this is good progress nontheless.
 
 (2) Each team member's contribution:
-Michael Alvarez: 
+Michael Alvarez: I set up the base skeleton for initializing the WiFi P2P Manager (Aka WiFi-Direct) which is the API 
+that handles calls for discovering peers and connecting to them. Currently all it does is initialize and then attempt
+to discover neighbors. Additionally, I added some skeleton code for the client and server sides of a data tranfer.
 
 
 Ben Breisch: 
