@@ -12,6 +12,9 @@ that handles calls for discovering peers and connecting to them. Currently all i
 to discover neighbors. Additionally, I added some skeleton code for the client and server sides of a data tranfer.
 
 
-Ben Breisch: 
+Ben Breisch: I have started the implementation of the front-end UI using Jetpack Compose. This is built into Android Studio
+and performs better than XML-based layouts. It is also much easier to develop Jetpack UIs compared to the traditional XML.
+I have not pushed any updates since it is a work in progress but I am done with one out of the three pages and almost done
+with the second page. Next week will focus on finishing the UI and hooking it up to logic added by Luke and Michael.
 
 Luke Beukelman: I've continues to look into WiFi direct in Android, and have started to add bits and pieces to the application.
