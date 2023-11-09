@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.csci572.adhocmessaging.ui.components.NavBar
+import com.csci572.adhocmessaging.ui.components.User
+import com.csci572.adhocmessaging.ui.components.UserCard
 
 @ExperimentalMaterial3Api
 @Composable
@@ -20,7 +22,10 @@ fun UserScreen(navController: NavController) {
             innerPadding ->
         Column(modifier = Modifier
             .padding(innerPadding)) {
-
+            //for each nearby user
+            UserCard(navController, User("Santa Claus", "AABBCCDD"))
+            UserCard(navController, User("John Wick", "AABBCCDD"))
+            UserCard(navController, User("Ben Breisch", "AABBCCDD"))
         }
     }
 }

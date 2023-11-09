@@ -23,10 +23,13 @@ fun Navigation() {
             UserScreen(navController = navController)
         }
         composable(
-            route = "ChatScreen"
-            //TODO: add args here to fetch user chat history
+            route = "ChatScreen/{userId}"
         ) {
-            ChatScreen(navController = navController)
+            backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")
+            if (userId != null) {
+                ChatScreen(navController = navController, userId = userId)
+            }
         }
     }
 }
