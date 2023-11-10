@@ -1,0 +1,14 @@
+(1) Team progress compared to milestones:
+This week we continued application development. The frontend UI for the app is nearly finished and much of the structure 
+for the Wi-Fi P2P messaging backend is working. We are meeting on Sunday in-person to integrate the backend with the frontend.
+We aim to get a version working on two Android devices within a week, which lines up with our milestone of 11/15. We have created the 
+final report document and aim to start writing once the implementation is done. We look to test and verify our design once we have it
+deployed to physical devices.
+
+(2) Each team member's contribution:
+Michael Alvarez: 
+
+Ben Breisch: I worked on the frontend UI this week. I learned how to create the UI in Android's Jetpack Compose, something I've never used before.
+The structure of the UI is done and the only thing left is to style it better and integrate the buttons and different screens with the backend code.
+
+Luke Beukelman: 
