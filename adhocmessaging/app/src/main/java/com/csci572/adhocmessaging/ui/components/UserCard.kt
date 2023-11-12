@@ -41,7 +41,7 @@ fun UserCard(navController : NavController, user: User) {
         modifier = Modifier
         .fillMaxWidth()
         .padding(10.dp),
-        onClick = { navController.navigate("ChatScreen/{user}".replace(oldValue="{user}", newValue = user.username)) }
+        onClick = { navController.navigate("ChatScreen/{user}".replace(oldValue="{user}", newValue = user.MAC)) }
         ) {
             Text(
                 text = user.username,
