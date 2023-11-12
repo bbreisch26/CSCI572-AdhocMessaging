@@ -1,5 +1,8 @@
 package com.csci572.adhocmessaging.ui.components
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -23,13 +26,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.csci572.adhocmessaging.R
 import com.csci572.adhocmessaging.ui.theme.Blue80
 import com.csci572.adhocmessaging.ui.theme.Gray80
+import java.io.File
 
 @ExperimentalMaterial3Api
 @Composable
@@ -38,10 +46,16 @@ fun Login(navController: NavController) {
         modifier = Modifier
             .padding(10.dp)
     ) {
-        //TODO: Insert logo here
-        //Image(bitmap = , contentDescription="Logo")
+        Text(
+            text = "Login",
+            modifier = Modifier
+                .padding(10.dp),
+            textAlign = TextAlign.Center,
+        )
+
         Row(horizontalArrangement = Arrangement.Center,
             modifier = Modifier.padding(10.dp)) {
+
             Text(
                 text = "Name: ",
                 textAlign = TextAlign.Center,
