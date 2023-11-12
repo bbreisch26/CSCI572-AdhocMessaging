@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.csci572.adhocmessaging.MainActivity
 import com.csci572.adhocmessaging.ui.components.Message
 import com.csci572.adhocmessaging.ui.components.MessageContent
 import com.csci572.adhocmessaging.ui.components.NavBar
@@ -17,7 +18,9 @@ import com.csci572.adhocmessaging.ui.components.NavBar
 //Experimental tag needed for Scaffold (apparently)
 @ExperimentalMaterial3Api
 @Composable
-fun ChatScreen(navController: NavController, userId: String) {
+fun ChatScreen(navController: NavController, userId: String, activity: MainActivity) {
+    activity.connectToPeer(userId)
+
     Scaffold(
         topBar = {
             NavBar(navController, userId)

@@ -98,9 +98,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    fun connectToPeer(device : WifiP2pDevice) {
+    fun connectToPeer(address : String) {
         val config = WifiP2pConfig()
-        config.deviceAddress = device.deviceAddress
+        config.deviceAddress = address
         channel?.also { channel ->
             manager?.connect(channel, config, object : WifiP2pManager.ActionListener {
 
