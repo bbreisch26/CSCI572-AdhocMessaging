@@ -2,6 +2,8 @@ package com.csci572.adhocmessaging
 
 import android.content.Context
 import android.content.IntentFilter
+import android.net.wifi.p2p.WifiP2pConfig
+import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pDeviceList
 import android.net.wifi.p2p.WifiP2pManager
 import android.os.Bundle
@@ -89,6 +91,23 @@ class MainActivity : ComponentActivity() {
         super.onPause()
         receiver?.also { receiver ->
             unregisterReceiver(receiver)
+        }
+    }
+
+    fun connectToPeer(device : WifiP2pDevice) {
+        val config = WifiP2pConfig()
+        config.deviceAddress = device.deviceAddress
+        channel?.also { channel ->
+            manager?.connect(channel, config, object : WifiP2pManager.ActionListener {
+
+                override fun onSuccess() {
+                    //success logic
+                }
+
+                override fun onFailure(reason: Int) {
+                    //failure logic
+                }
+            })
         }
     }
 }
