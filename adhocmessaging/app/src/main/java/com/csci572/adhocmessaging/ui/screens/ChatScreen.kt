@@ -7,6 +7,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.csci572.adhocmessaging.ui.components.Message
 import com.csci572.adhocmessaging.ui.components.MessageContent
@@ -18,13 +20,14 @@ import com.csci572.adhocmessaging.ui.components.NavBar
 fun ChatScreen(navController: NavController, userId: String) {
     Scaffold(
         topBar = {
-            NavBar(userId)
+            NavBar(navController, userId)
         }
     ) {
         innerPadding ->
         Row(modifier = Modifier
-            .padding(innerPadding)) {
-            Message(MessageContent(true, "Lorem Ipsum"))
+            .padding(innerPadding)
+            .padding(10.dp)) {
+            Message(MessageContent(false, "Lorem Ipsum"))
         }
     }
 }

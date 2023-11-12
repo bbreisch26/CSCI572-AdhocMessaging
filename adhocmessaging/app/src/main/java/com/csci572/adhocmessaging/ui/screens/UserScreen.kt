@@ -16,7 +16,7 @@ import com.csci572.adhocmessaging.ui.components.UserCard
 fun UserScreen(navController: NavController) {
     Scaffold(
         topBar = {
-            NavBar("Nearby Users")
+            NavBar(navController, "Nearby Users")
         }
     ) {
             innerPadding ->
