@@ -14,7 +14,7 @@ import android.net.wifi.p2p.WifiP2pManager.PeerListListener
 class WiFiDirectBroadcastReceiver(
     private val manager: WifiP2pManager?,
     private val channel: WifiP2pManager.Channel,
-    private val activity: WiFiDirectActivity,
+    private val activity: MainActivity,
     private val peerListListener: PeerListListener
 ) : BroadcastReceiver() {
 
