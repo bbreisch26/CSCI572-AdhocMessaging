@@ -40,14 +40,18 @@ class MainActivity : ComponentActivity() {
         addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)
     }
 
+    // List of nearby devices
     var peerList : WifiP2pDeviceList? = null
+    //
+    private val peerListListener = WifiP2pManager.PeerListListener { peers ->
+        peerList = peers
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val peerListListener = WifiP2pManager.PeerListListener { peers ->
-            peerList = peers
-        }
+
 
         channel = manager?.initialize(this, mainLooper, null)
         channel?.also { channel ->
@@ -72,7 +76,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = Blue80
                 ) {
-                    Navigation()
+                    Navigation(this)
                 }
             }
         }

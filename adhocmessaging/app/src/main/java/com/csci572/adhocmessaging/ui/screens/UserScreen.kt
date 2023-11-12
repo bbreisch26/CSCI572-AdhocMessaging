@@ -7,13 +7,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import com.csci572.adhocmessaging.MainActivity
 import com.csci572.adhocmessaging.ui.components.NavBar
 import com.csci572.adhocmessaging.ui.components.User
 import com.csci572.adhocmessaging.ui.components.UserCard
 
 @ExperimentalMaterial3Api
 @Composable
-fun UserScreen(navController: NavController) {
+fun UserScreen(navController: NavController, activity: MainActivity) {
     Scaffold(
         topBar = {
             NavBar(navController, "Nearby Users")
@@ -23,9 +24,10 @@ fun UserScreen(navController: NavController) {
         Column(modifier = Modifier
             .padding(innerPadding)) {
             //for each nearby user
-            UserCard(navController, User("Santa Claus", "AABBCCDD"))
-            UserCard(navController, User("John Wick", "AABBCCDD"))
-            UserCard(navController, User("Ben Breisch", "AABBCCDD"))
+
+            activity.peerList?.deviceList?.forEach {
+                UserCard(navController, User(it.deviceName, it.deviceAddress))
+            }
         }
     }
 }

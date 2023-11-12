@@ -8,10 +8,9 @@ import androidx.navigation.compose.composable
 import com.csci572.adhocmessaging.ui.screens.ChatScreen
 import com.csci572.adhocmessaging.ui.screens.HomeScreen
 import com.csci572.adhocmessaging.ui.screens.UserScreen
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Navigation() {
+fun Navigation(activity: MainActivity) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "HomeScreen") {
         composable(
@@ -20,7 +19,7 @@ fun Navigation() {
         }
         composable(
             route = "UserScreen") {
-            UserScreen(navController = navController)
+            UserScreen(navController = navController, activity = activity)
         }
         composable(
             route = "ChatScreen/{userId}"
