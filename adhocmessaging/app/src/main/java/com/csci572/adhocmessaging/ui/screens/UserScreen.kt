@@ -11,6 +11,7 @@ import com.csci572.adhocmessaging.MainActivity
 import com.csci572.adhocmessaging.ui.components.NavBar
 import com.csci572.adhocmessaging.ui.components.User
 import com.csci572.adhocmessaging.ui.components.UserCard
+import com.csci572.adhocmessaging.ui.theme.Gray80
 
 @ExperimentalMaterial3Api
 @Composable
@@ -18,7 +19,8 @@ fun UserScreen(navController: NavController, activity: MainActivity) {
     Scaffold(
         topBar = {
             NavBar(navController, "Nearby Users")
-        }
+        },
+        containerColor = Gray80
     ) {
             innerPadding ->
         Column(modifier = Modifier
