@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.csci572.adhocmessaging.ui.theme.Blue80
 
@@ -29,6 +30,6 @@ fun Message(message : MessageContent) {
             .background(Blue80)
             .padding(16.dp)
     ) {
-        Text(text = message.text)
+        Text(text = message.text, color= Color.White)
     }
 }

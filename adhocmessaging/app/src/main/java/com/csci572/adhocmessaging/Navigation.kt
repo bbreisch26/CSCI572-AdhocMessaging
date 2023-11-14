@@ -27,7 +27,7 @@ fun Navigation(activity: MainActivity) {
             backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
-                ChatScreen(navController = navController, userId = userId)
+                ChatScreen(navController = navController, userId = userId, activity = activity)
             }
         }
     }
