@@ -7,6 +7,7 @@ import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pDeviceList
 import android.net.wifi.p2p.WifiP2pManager
 import android.net.wifi.p2p.WifiP2pManager.PeerListListener
+import android.util.Log
 
 /**
  * A BroadcastReceiver that notifies of important Wi-Fi p2p events.
@@ -27,6 +28,7 @@ class WiFiDirectBroadcastReceiver(
                 when (state) {
                     WifiP2pManager.WIFI_P2P_STATE_ENABLED -> {
                         // Wifi P2P is enabled
+                        Log.v("BroadcastReceiver", "WiFi P2P Enabled")
                     }
                     else -> {
                         // Wi-Fi P2P is not enabled

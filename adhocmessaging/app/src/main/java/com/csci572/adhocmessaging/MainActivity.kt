@@ -7,6 +7,7 @@ import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pDeviceList
 import android.net.wifi.p2p.WifiP2pManager
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -63,10 +64,12 @@ class MainActivity : ComponentActivity() {
 
             override fun onSuccess() {
                 // TODO Insert Success logic
+                Log.v("MainActivity","Successful Discover Peers")
             }
 
             override fun onFailure(reasonCode: Int) {
                 // TODO Insert failure logic
+                Log.v("MainActivity","Failure Discover Peers: " + reasonCode)
             }
         })
         //Set up data server to receive messages
