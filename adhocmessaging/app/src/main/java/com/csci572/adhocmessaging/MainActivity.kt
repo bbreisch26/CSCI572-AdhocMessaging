@@ -42,17 +42,18 @@ class MainActivity : ComponentActivity() {
 
     // List of nearby devices
     var peerList : WifiP2pDeviceList? = null
-    //
+    // Call back function
     private val peerListListener = WifiP2pManager.PeerListListener { peers ->
         peerList = peers
     }
 
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-
+        // Set up Wifi-Direct Backend
         channel = manager?.initialize(this, mainLooper, null)
         channel?.also { channel ->
             receiver = WiFiDirectBroadcastReceiver(manager, channel, this, peerListListener)
@@ -68,6 +69,8 @@ class MainActivity : ComponentActivity() {
                 // TODO Insert failure logic
             }
         })
+        //Set up data server to receive messages
+
 
         setContent {
             AdhocmessagingTheme {
