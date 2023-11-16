@@ -71,10 +71,14 @@ class MainActivity : ComponentActivity() {
             object : WifiP2pManager.ActionListener {
                 override fun onSuccess() {
                     // Success!
+                    Log.v("MainActivity","Successful Add Service Request")
+
                 }
 
                 override fun onFailure(code: Int) {
                     // Command failed.  Check for P2P_UNSUPPORTED, ERROR, or BUSY
+                    Log.v("MainActivity","Failure Add Service Request: " + code)
+
                 }
             }
         )
@@ -164,11 +168,14 @@ class MainActivity : ComponentActivity() {
         manager?.addLocalService(channel, serviceInfo, object : WifiP2pManager.ActionListener {
             override fun onSuccess() {
                 // Command successful! Code isn't necessarily needed here,
+                Log.v("MainActivity","Successful Add Local Service ")
+
                 // Unless you want to update the UI or add logging statements.
             }
 
-            override fun onFailure(arg0: Int) {
+            override fun onFailure(code: Int) {
                 // Command failed.  Check for P2P_UNSUPPORTED, ERROR, or BUSY
+                Log.v("MainActivity","Failure Add Local Service: " + code)
             }
         })
     }
