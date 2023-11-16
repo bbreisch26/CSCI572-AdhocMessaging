@@ -6,6 +6,8 @@ import android.net.wifi.p2p.WifiP2pConfig
 import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pDeviceList
 import android.net.wifi.p2p.WifiP2pManager
+import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo
+import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -41,15 +43,14 @@ class MainActivity : ComponentActivity() {
         addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)
     }
 
-    // List of nearby devices
-    var peerList : WifiP2pDeviceList? = null
-    // Call back function
-    private val peerListListener = WifiP2pManager.PeerListListener { peers ->
-        peerList = peers
-    }
+//    // List of nearby devices
+//    var peerList : WifiP2pDeviceList? = null
+//    // Call back function
+//    private val peerListListener = WifiP2pManager.PeerListListener { peers ->
+//        peerList = peers
+//    }
 
-
-
+    val servicePeers = mutableMapOf<String, String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,21 +58,60 @@ class MainActivity : ComponentActivity() {
         // Set up Wifi-Direct Backend
         channel = manager?.initialize(this, mainLooper, null)
         channel?.also { channel ->
-            receiver = WiFiDirectBroadcastReceiver(manager, channel, this, peerListListener)
+//            receiver = WiFiDirectBroadcastReceiver(manager, channel, this, peerListListener)
         }
 
-        manager?.discoverPeers(channel, object : WifiP2pManager.ActionListener {
+        this.registerService()
+        this.discoverService()
 
-            override fun onSuccess() {
-                // TODO Insert Success logic
-                Log.v("MainActivity","Successful Discover Peers")
-            }
+        var serviceRequest = WifiP2pDnsSdServiceRequest.newInstance()
+        manager?.addServiceRequest(
+            channel,
+            serviceRequest,
+            object : WifiP2pManager.ActionListener {
+                override fun onSuccess() {
+                    // Success!
+                }
 
-            override fun onFailure(reasonCode: Int) {
-                // TODO Insert failure logic
-                Log.v("MainActivity","Failure Discover Peers: " + reasonCode)
+                override fun onFailure(code: Int) {
+                    // Command failed.  Check for P2P_UNSUPPORTED, ERROR, or BUSY
+                }
             }
-        })
+        )
+
+        manager?.discoverServices(
+            channel,
+            object : WifiP2pManager.ActionListener {
+                override fun onSuccess() {
+                    // Success!
+                    Log.v("MainActivity","Successful Discover Services")
+                }
+
+                override fun onFailure(code: Int) {
+                    Log.v("MainActivity","Failure Discover Services: " + code)
+                    // Command failed. Check for P2P_UNSUPPORTED, ERROR, or BUSY
+                    when (code) {
+                        WifiP2pManager.P2P_UNSUPPORTED -> {
+                            Log.d("MainActivity", "Wi-Fi Direct isn't supported on this device.")
+                        }
+                    }
+                }
+            }
+        )
+
+
+//        manager?.discoverPeers(channel, object : WifiP2pManager.ActionListener {
+//
+//            override fun onSuccess() {
+//                // TODO Insert Success logic
+//                Log.v("MainActivity","Successful Discover Peers")
+//            }
+//
+//            override fun onFailure(reasonCode: Int) {
+//                // TODO Insert failure logic
+//                Log.v("MainActivity","Failure Discover Peers: " + reasonCode)
+//            }
+//        })
         //Set up data server to receive messages
 
 
@@ -102,6 +142,68 @@ class MainActivity : ComponentActivity() {
         receiver?.also { receiver ->
             unregisterReceiver(receiver)
         }
+    }
+
+    private fun registerService() {
+        //  Create a string map containing information about your service.
+        val record: Map<String, String> = mapOf(
+            "listenport" to "8888",
+            "buddyname" to "John Doe${(Math.random() * 1000).toInt()}",
+            "available" to "visible"
+        )
+
+        // Service information.  Pass it an instance name, service type
+        // _protocol._transportlayer , and the map containing
+        // information other devices will want once they connect to this one.
+        val serviceInfo =
+            WifiP2pDnsSdServiceInfo.newInstance("_test", "_presence._tcp", record)
+
+        // Add the local service, sending the service info, network channel,
+        // and listener that will be used to indicate success or failure of
+        // the request.
+        manager?.addLocalService(channel, serviceInfo, object : WifiP2pManager.ActionListener {
+            override fun onSuccess() {
+                // Command successful! Code isn't necessarily needed here,
+                // Unless you want to update the UI or add logging statements.
+            }
+
+            override fun onFailure(arg0: Int) {
+                // Command failed.  Check for P2P_UNSUPPORTED, ERROR, or BUSY
+            }
+        })
+    }
+
+    private fun discoverService() {
+        /* Callback includes:
+         * fullDomain: full domain name: e.g. "printer._ipp._tcp.local."
+         * record: TXT record dta as a map of key/value pairs.
+         * device: The device running the advertised service.
+         */
+        val txtListener = WifiP2pManager.DnsSdTxtRecordListener { fullDomain, record, device ->
+            Log.v("MainActivity","DnsSdTxtRecord available -$record")
+            record["buddyname"]?.also {
+                servicePeers[device.deviceAddress] = it
+            }
+        }
+
+        val servListener = WifiP2pManager.DnsSdServiceResponseListener { instanceName, registrationType, resourceType ->
+            // Update the device name with the human-friendly version from
+            // the DnsTxtRecord, assuming one arrived.
+            resourceType.deviceName = servicePeers[resourceType.deviceAddress] ?: resourceType.deviceName
+
+            // Add to the custom adapter defined specifically for showing
+            // wifi devices.
+//            val fragment = fragmentManager
+//                .findFragmentById(R.id.frag_peerlist) as WiFiDirectServicesList
+//            (fragment.listAdapter as WiFiDevicesAdapter).apply {
+//                add(resourceType)
+//                notifyDataSetChanged()
+//            }
+
+            Log.v("MainActivity", "onBonjourServiceAvailable $instanceName")
+        }
+
+        manager?.setDnsSdResponseListeners(channel, servListener, txtListener)
     }
 
     fun connectToPeer(address : String) {

@@ -27,8 +27,12 @@ fun UserScreen(navController: NavController, activity: MainActivity) {
             .padding(innerPadding)) {
             //for each nearby user
 
-            activity.peerList?.deviceList?.forEach {
-                UserCard(navController, User(it.deviceName, it.deviceAddress))
+//            activity.peerList?.deviceList?.forEach {
+//                UserCard(navController, User(it.deviceName, it.deviceAddress))
+//            }
+
+            activity.servicePeers?.forEach {
+                UserCard(navController, User(it.value, it.key))
             }
         }
     }
