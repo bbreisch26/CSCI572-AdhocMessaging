@@ -61,7 +61,19 @@ class MainActivity : ComponentActivity() {
 //            receiver = WiFiDirectBroadcastReceiver(manager, channel, this, peerListListener)
         }
 
-        this.registerService()
+        manager?.clearLocalServices(channel, object : WifiP2pManager.ActionListener {
+            override fun onSuccess() {
+                // Command successful! Code isn't necessarily needed here,
+                Log.v("MainActivity","Successful Clear Services ")
+                registerService()
+                // Unless you want to update the UI or add logging statements.
+            }
+
+            override fun onFailure(code: Int) {
+                // Command failed.  Check for P2P_UNSUPPORTED, ERROR, or BUSY
+                Log.v("MainActivity","Failure Clear Services: " + code)
+            }
+        })
         this.discoverService()
 
         var serviceRequest = WifiP2pDnsSdServiceRequest.newInstance()
@@ -130,6 +142,14 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        manager?.cancelConnect(channel, null)
+        unregisterReceiver(receiver);
+        manager?.stopPeerDiscovery(channel, null)
     }
 
     /* register the broadcast receiver with the intent values to be matched */
