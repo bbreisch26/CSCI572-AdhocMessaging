@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.csci572.adhocmessaging.MainActivity
+import com.csci572.adhocmessaging.ui.components.ChatBar
 import com.csci572.adhocmessaging.ui.components.Message
 import com.csci572.adhocmessaging.ui.components.MessageContent
 import com.csci572.adhocmessaging.ui.components.NavBar
@@ -24,6 +25,9 @@ fun ChatScreen(navController: NavController, userId: String, activity: MainActiv
     Scaffold(
         topBar = {
             NavBar(navController, userId)
+        },
+        bottomBar = {
+            ChatBar()
         }
     ) {
         innerPadding ->

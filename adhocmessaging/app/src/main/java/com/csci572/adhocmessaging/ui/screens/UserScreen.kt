@@ -30,6 +30,7 @@ fun UserScreen(navController: NavController, activity: MainActivity) {
             activity.peerList?.deviceList?.forEach {
                 UserCard(navController, User(it.deviceName, it.deviceAddress))
             }
+            UserCard(navController, User("beep", "boop"))
         }
     }
 }

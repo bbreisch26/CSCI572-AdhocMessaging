@@ -37,6 +37,7 @@ class WiFiDirectBroadcastReceiver(
             }
             WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION -> {
                 // Call WifiP2pManager.requestPeers() to get a list of current peers
+                Log.v("BroadcastReceiver", "Called P2P PEERS CHANGED ACTION")
                 manager?.requestPeers(channel, peerListListener)
             }
             WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION -> {

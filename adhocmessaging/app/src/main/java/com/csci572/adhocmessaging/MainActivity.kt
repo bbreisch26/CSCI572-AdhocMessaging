@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
         channel?.also { channel ->
             receiver = WiFiDirectBroadcastReceiver(manager, channel, this, peerListListener)
         }
-
+        Log.v("MainActivity","Calling Discover Peers")
         manager?.discoverPeers(channel, object : WifiP2pManager.ActionListener {
 
             override fun onSuccess() {
