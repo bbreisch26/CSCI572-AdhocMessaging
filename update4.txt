@@ -1,0 +1,18 @@
+(1) Team progress compared to milestones:
+This week we used the class time to work as a group. We have run the application on two phones,
+but have not gotten them to communicate yet. They have been able to detect other WiFi direct
+devices, but not each other. We found that one of the phone was giving error when initiating the
+WiFi direct interface, so we need to debug that.
+
+(2) Each team member's contribution:
+Michael Alvarez: 
+
+Ben Breisch:
+
+Luke Beukelman: I wiped my old phone for group usage. The other phone is my present personal phone,
+which is the one that is giving us grief. We worked as a group in testing in developing on Tuesday
+and Thursday, and I have spent about an additional hour trying to resolve an issue with android studio
+where I am unable to debug my phone over a wired connection, only over a wireles communication, which
+we think may result in additional trouble to WiFi direct. We ran my personal phone in USB debugging on
+Michael's computer and still found it to be giving errors (although rather from being busy, it was a
+generic error).
