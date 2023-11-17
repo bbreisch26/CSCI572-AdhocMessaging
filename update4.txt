@@ -1,0 +1,15 @@
+(1) Team progress compared to milestones:
+Last sunday we integrated the backend of our app with the frontend. During this week we continued with development now that we could 
+test our backend functionality on actual hardware. Using a spare android device and Luke's android phone we began to test the 
+WifiP2p API functionality. Currently, we've been able to discover possible peer devices but are having trouble getting both androids 
+to discover each other. This puts us slightly behind our initial milestones but we're still making good progress. One of the andorid
+devices has the app working and we're diagnosing why the second device is encountering issues.
+
+(2) Each team member's contribution:
+Michael Alvarez: I met with the rest of the team on Tuesday and Thursday as we worked through live testing. Together we diagnosed 
+issues and fixed them as we got closer to full functionality. Specifically I helped integrate our backend code into the frontend and 
+also set up the service broadcast functionality that will allow different devices running this app to detect each other.
+
+Ben Breisch: 
+
+Luke Beukelman: 
