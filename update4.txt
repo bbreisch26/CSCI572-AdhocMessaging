@@ -1,6 +1,6 @@
 (1) Team progress compared to milestones:
 Last sunday we integrated the backend of our app with the frontend. This week we used the class
-time to work as a group. We have run the application on two phones, but have not gotten them to 
+times to work as a group. We have run the application on two phones, but have not gotten them to 
 communicate yet. They have been able to detect other WiFi direct devices, but not each other. 
 We found that one of the phone was giving error when initiating the WiFi direct interface, so 
 we need to debug that. This puts us slightly behind our initial milestones but we're still making 
@@ -12,7 +12,11 @@ testing. Together we diagnosed issues and fixed them as we got closer to full fu
 Specifically I helped integrate our backend code into the frontend and also set up the service 
 broadcast functionality that will allow different devices running this app to detect each other.
 
-Ben Breisch:
+Ben Breisch: I met with the team during class time on Tuesday and Thursday while we worked on the
+project in-person. We were able to get the app deployed to phones and are getting closer to a
+functional version. I updated parts of the front-end to accomodate the p2p code and made styling
+updates. I also ran the app on the second phone while we debugged. Next week we aim to get the app
+completely working and start the presentation and reports.
 
 Luke Beukelman: I wiped my old phone for group usage. The other phone is my present personal phone,
 which is the one that is giving us grief. We worked as a group in testing in developing on Tuesday
