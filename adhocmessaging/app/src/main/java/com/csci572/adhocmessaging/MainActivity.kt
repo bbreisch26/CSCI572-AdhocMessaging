@@ -2,13 +2,17 @@ package com.csci572.adhocmessaging
 
 import android.content.Context
 import android.content.IntentFilter
+import android.net.wifi.WpsInfo
 import android.net.wifi.p2p.WifiP2pConfig
 import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pDeviceList
 import android.net.wifi.p2p.WifiP2pManager
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest
+import android.os.AsyncTask
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,6 +32,10 @@ import androidx.compose.ui.unit.dp
 import com.csci572.adhocmessaging.ui.theme.Blue80
 
 import com.csci572.adhocmessaging.WiFiDirectBroadcastReceiver
+import java.io.IOException
+import java.io.OutputStream
+import java.net.ServerSocket
+import java.net.Socket
 
 class MainActivity : ComponentActivity() {
     val manager: WifiP2pManager? by lazy(LazyThreadSafetyMode.NONE) {
@@ -42,6 +50,8 @@ class MainActivity : ComponentActivity() {
         addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION)
         addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)
     }
+    private var serverSocket: ServerSocket? = null
+    private var clientSocket: Socket? = null
 
 //    // List of nearby devices
 //    var peerList : WifiP2pDeviceList? = null
@@ -58,7 +68,7 @@ class MainActivity : ComponentActivity() {
         // Set up Wifi-Direct Backend
         channel = manager?.initialize(this, mainLooper, null)
         channel?.also { channel ->
-//            receiver = WiFiDirectBroadcastReceiver(manager, channel, this, peerListListener)
+            //receiver = WiFiDirectBroadcastReceiver(manager, channel, this, peerListListener)
         }
 
         /*manager?.clearLocalServices(channel, object : WifiP2pManager.ActionListener {
@@ -150,6 +160,7 @@ class MainActivity : ComponentActivity() {
 
         manager?.cancelConnect(channel, null)
         unregisterReceiver(receiver);
+        closeSockets()
         manager?.stopPeerDiscovery(channel, null)
     }
 
@@ -212,6 +223,7 @@ class MainActivity : ComponentActivity() {
             record["buddyname"]?.also {
                 servicePeers[device.deviceAddress] = it
             }
+
         }
 
         val servListener = WifiP2pManager.DnsSdServiceResponseListener { instanceName, registrationType, resourceType ->
@@ -237,11 +249,13 @@ class MainActivity : ComponentActivity() {
     fun connectToPeer(address : String) {
         val config = WifiP2pConfig()
         config.deviceAddress = address
+        config.wps.setup = WpsInfo.PBC
         channel?.also { channel ->
             manager?.connect(channel, config, object : WifiP2pManager.ActionListener {
 
                 override fun onSuccess() {
                     Log.v("MainActivity", "Successfully connected to peer: $address")
+                    initiateServerSocket()
                 }
 
                 override fun onFailure(reason: Int) {
@@ -251,6 +265,53 @@ class MainActivity : ComponentActivity() {
                 }
             })
         }
+    }
+    private fun initiateServerSocket() {
+        // Create a server socket to listen for incoming messages
+        var serverSocket = ServerSocket(8888)
+        Handler(Looper.getMainLooper()).post {
+            // Start a background thread to accept incoming connections
+            ServerSocketTask().execute()
+        }
+    }
+    private fun closeSockets() {
+        serverSocket?.close()
+        clientSocket?.close()
+    }
+    // AsyncTask to accept incoming connections in the background
+    private inner class ServerSocketTask : AsyncTask<Void, Void, Void>() {
+
+        override fun doInBackground(vararg params: Void): Void? {
+            try {
+                // Accept incoming connections
+                clientSocket = serverSocket?.accept()
+            } catch (e: IOException) {
+                Log.e("ServerSocketTask", "Error accepting connection: ${e.message}")
+            }
+
+            return null
+        }
+    }
+    private inner class SendMessageTask : AsyncTask<String, Void, Void>() {
+        override fun doInBackground(vararg params: String): Void? {
+            try {
+                // Get the output stream of the client socket
+                val outputStream: OutputStream = clientSocket!!.getOutputStream()
+
+                // Write the message to the output stream
+                val message = params[0].toByteArray()
+                outputStream.write(message)
+                outputStream.flush()
+            } catch (e: IOException) {
+                Log.e("SendMessageTask", "Error sending message: ${e.message}")
+            }
+
+            return null
+        }
+    }
+    fun sendMessage(address : String, message: String) {
+        Log.v("sendMessage", "Sending message: $message")
+        SendMessageTask().execute(message)
     }
 }
 

@@ -19,20 +19,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.csci572.adhocmessaging.R
+import com.csci572.adhocmessaging.MainActivity
 import com.csci572.adhocmessaging.ui.theme.Blue80
 import com.csci572.adhocmessaging.ui.theme.Gray80
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatBar() {
+fun ChatBar(address: String, activity: MainActivity) {
     var inputValue by remember { mutableStateOf("") }
     fun sendMessage() {
 
         //messageInputViewModel.sendMessage(inputValue)
-        Log.v("ChatScreen", "String to send : $inputValue");
+        Log.v("ChatScreen", "String to send : $inputValue")
+        activity.sendMessage(address, inputValue)
         inputValue = ""
 
     }
