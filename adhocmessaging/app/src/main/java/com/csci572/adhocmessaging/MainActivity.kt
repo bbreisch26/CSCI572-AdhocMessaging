@@ -111,18 +111,18 @@ class MainActivity : ComponentActivity() {
             }
         )
 
-        manager?.discoverPeers(channel, object : WifiP2pManager.ActionListener {
-
-            override fun onSuccess() {
-                // TODO Insert Success logic
-                Log.v("MainActivity","Successful Discover Peers")
-            }
-
-            override fun onFailure(reasonCode: Int) {
-                // TODO Insert failure logic
-                Log.v("MainActivity","Failure Discover Peers: " + reasonCode)
-            }
-        })
+//        manager?.discoverPeers(channel, object : WifiP2pManager.ActionListener {
+//
+//            override fun onSuccess() {
+//                // TODO Insert Success logic
+//                Log.v("MainActivity","Successful Discover Peers")
+//            }
+//
+//            override fun onFailure(reasonCode: Int) {
+//                // TODO Insert failure logic
+//                Log.v("MainActivity","Failure Discover Peers: " + reasonCode)
+//            }
+//        })
         //Set up data server to receive messages
 
 
