@@ -3,6 +3,7 @@ package com.csci572.adhocmessaging.ui.screens
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,7 +21,7 @@ fun UserScreen(navController: NavController, activity: MainActivity) {
         topBar = {
             NavBar(navController, "Nearby Users")
         },
-        containerColor = Gray80
+        containerColor = MaterialTheme.colorScheme.background
     ) {
             innerPadding ->
         Column(modifier = Modifier

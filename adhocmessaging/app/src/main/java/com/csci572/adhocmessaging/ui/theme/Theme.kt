@@ -18,13 +18,16 @@ import androidx.core.view.WindowCompat
 private val DarkColorScheme = darkColorScheme(
     primary = Blue80,
     secondary = BlueGray80,
-    tertiary = Gray80
+    tertiary = DarkGray80,
+    onBackground = Gray80,
+    background = DarkGray80
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    primary = Blue80,
+    secondary = BlueGray80,
+    tertiary = Gray80,
+    background = Gray80
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -41,7 +44,7 @@ private val LightColorScheme = lightColorScheme(
 fun AdhocmessagingTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

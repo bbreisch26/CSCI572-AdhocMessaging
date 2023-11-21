@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
@@ -22,7 +23,7 @@ import com.csci572.adhocmessaging.ui.components.Login
 fun HomeScreen(navController: NavController) {
     Box(
         modifier = Modifier
-            .background(Gray80)
+            .background(MaterialTheme.colorScheme.background)
             .fillMaxSize(),
         contentAlignment = Alignment.CenterStart,
     ) {
