@@ -85,7 +85,7 @@ class MainActivity : ComponentActivity() {
             }
         })*/
         registerService()
-        this.discoverService()
+        discoverService()
 
         var serviceRequest = WifiP2pDnsSdServiceRequest.newInstance()
         manager?.addServiceRequest(
