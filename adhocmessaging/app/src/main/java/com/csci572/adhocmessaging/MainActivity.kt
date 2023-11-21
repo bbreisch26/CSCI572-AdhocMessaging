@@ -53,14 +53,12 @@ class MainActivity : ComponentActivity() {
     private var serverSocket: ServerSocket? = null
     private var clientSocket: Socket? = null
 
-//    // List of nearby devices
-//    var peerList : WifiP2pDeviceList? = null
-//    // Call back function
-//    private val peerListListener = WifiP2pManager.PeerListListener { peers ->
-//        peerList = peers
-//    }
-
-    val servicePeers = mutableMapOf<String, String>()
+    // List of peer devices
+    var peerList : WifiP2pDeviceList? = null
+    // Map of (MAC address, device name) items
+    var servicePeerList = mutableMapOf<String, String>()
+    // Address of the current connection
+//    var currentConnectionAddress : String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,22 +66,9 @@ class MainActivity : ComponentActivity() {
         // Set up Wifi-Direct Backend
         channel = manager?.initialize(this, mainLooper, null)
         channel?.also { channel ->
-            //receiver = WiFiDirectBroadcastReceiver(manager, channel, this, peerListListener)
+            receiver = WiFiDirectBroadcastReceiver(manager, channel, this)
         }
 
-        /*manager?.clearLocalServices(channel, object : WifiP2pManager.ActionListener {
-            override fun onSuccess() {
-                // Command successful! Code isn't necessarily needed here,
-                Log.v("MainActivity","Successful Clear Services ")
-                registerService()
-                // Unless you want to update the UI or add logging statements.
-            }
-
-            override fun onFailure(code: Int) {
-                // Command failed.  Check for P2P_UNSUPPORTED, ERROR, or BUSY
-                Log.v("MainActivity","Failure Clear Services: " + code)
-            }
-        })*/
         registerService()
         discoverService()
 
@@ -126,19 +111,18 @@ class MainActivity : ComponentActivity() {
             }
         )
 
+        manager?.discoverPeers(channel, object : WifiP2pManager.ActionListener {
 
-//        manager?.discoverPeers(channel, object : WifiP2pManager.ActionListener {
-//
-//            override fun onSuccess() {
-//                // TODO Insert Success logic
-//                Log.v("MainActivity","Successful Discover Peers")
-//            }
-//
-//            override fun onFailure(reasonCode: Int) {
-//                // TODO Insert failure logic
-//                Log.v("MainActivity","Failure Discover Peers: " + reasonCode)
-//            }
-//        })
+            override fun onSuccess() {
+                // TODO Insert Success logic
+                Log.v("MainActivity","Successful Discover Peers")
+            }
+
+            override fun onFailure(reasonCode: Int) {
+                // TODO Insert failure logic
+                Log.v("MainActivity","Failure Discover Peers: " + reasonCode)
+            }
+        })
         //Set up data server to receive messages
 
 
@@ -220,8 +204,9 @@ class MainActivity : ComponentActivity() {
          */
         val txtListener = WifiP2pManager.DnsSdTxtRecordListener { fullDomain, record, device ->
             Log.v("MainActivity","DnsSdTxtRecord available -$record")
+            device.status
             record["buddyname"]?.also {
-                servicePeers[device.deviceAddress] = it
+                servicePeerList[device.deviceAddress] = it
             }
 
         }
@@ -229,7 +214,7 @@ class MainActivity : ComponentActivity() {
         val servListener = WifiP2pManager.DnsSdServiceResponseListener { instanceName, registrationType, resourceType ->
             // Update the device name with the human-friendly version from
             // the DnsTxtRecord, assuming one arrived.
-            resourceType.deviceName = servicePeers[resourceType.deviceAddress] ?: resourceType.deviceName
+            resourceType.deviceName = servicePeerList[resourceType.deviceAddress] ?: resourceType.deviceName
 
             // Add to the custom adapter defined specifically for showing
             // wifi devices.
