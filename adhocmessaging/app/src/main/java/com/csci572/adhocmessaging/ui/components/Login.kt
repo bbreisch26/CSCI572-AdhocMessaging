@@ -17,6 +17,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
@@ -47,7 +48,7 @@ import java.io.File
 @Composable
 fun Login(navController: NavController) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = Blue80),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
         modifier = Modifier
             .padding(10.dp)
     ) {
@@ -89,8 +90,8 @@ fun Login(navController: NavController) {
 @Composable
 fun SignInButton(navigateUserScreen: () -> Unit) {
     Button(onClick = navigateUserScreen, colors = ButtonDefaults.buttonColors(
-        containerColor = Gray80,
-        contentColor = Blue80)) {
+        containerColor = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.onBackground)) {
         Text("Sign In")
     }
 }
@@ -104,9 +105,9 @@ fun nameTextField() {
         onValueChange = { newText ->
             value = newText
         },
-        colors = TextFieldDefaults.textFieldColors(containerColor = Gray80, textColor = Blue80),
+        colors = TextFieldDefaults.textFieldColors(containerColor = MaterialTheme.colorScheme.background, textColor = MaterialTheme.colorScheme.onBackground),
         modifier = Modifier
-            .background(Color(0xFFFFFFFF))
+            .background(MaterialTheme.colorScheme.tertiary)
             .border(1.dp, Color.DarkGray)
 
     )
