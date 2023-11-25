@@ -15,7 +15,9 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -36,8 +38,15 @@ import java.io.IOException
 import java.io.OutputStream
 import java.net.ServerSocket
 import java.net.Socket
+import android.Manifest
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.runtime.SideEffect
+import androidx.core.app.ActivityCompat
+
 
 class MainActivity : ComponentActivity() {
+
     val manager: WifiP2pManager? by lazy(LazyThreadSafetyMode.NONE) {
         getSystemService(Context.WIFI_P2P_SERVICE) as WifiP2pManager?
     }
@@ -59,10 +68,12 @@ class MainActivity : ComponentActivity() {
     var servicePeerList = mutableMapOf<String, String>()
     // Address of the current connection
 //    var currentConnectionAddress : String? = null
-
+    override fun onStart() {
+        super.onStart()
+    }
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         // Set up Wifi-Direct Backend
         channel = manager?.initialize(this, mainLooper, null)
         channel?.also { channel ->
@@ -110,22 +121,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         )
-
-//        manager?.discoverPeers(channel, object : WifiP2pManager.ActionListener {
-//
-//            override fun onSuccess() {
-//                // TODO Insert Success logic
-//                Log.v("MainActivity","Successful Discover Peers")
-//            }
-//
-//            override fun onFailure(reasonCode: Int) {
-//                // TODO Insert failure logic
-//                Log.v("MainActivity","Failure Discover Peers: " + reasonCode)
-//            }
-//        })
-        //Set up data server to receive messages
-
-
         setContent {
             AdhocmessagingTheme {
                 // A surface container using the 'background' color from the theme
