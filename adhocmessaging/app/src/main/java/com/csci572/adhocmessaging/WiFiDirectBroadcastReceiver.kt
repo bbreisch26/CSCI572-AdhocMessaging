@@ -30,6 +30,8 @@ class WiFiDirectBroadcastReceiver(
                     WifiP2pManager.WIFI_P2P_STATE_ENABLED -> {
                         // Wifi P2P is enabled
                         Log.v("BroadcastReceiver", "WiFi P2P Enabled")
+                        val networkP2pInfo: WifiP2pInfo? = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_INFO)
+                        Log.v("networkP2pinfo", networkP2pInfo.toString())
                     }
                     else -> {
                         // Wi-Fi P2P is not enabled
@@ -51,6 +53,11 @@ class WiFiDirectBroadcastReceiver(
                 WifiP2pManager.EXTRA_NETWORK_INFO
 
                 val networkP2pInfo: WifiP2pInfo? = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_INFO)
+                Log.v("networkP2pinfo", networkP2pInfo.toString())
+                manager?.requestConnectionInfo(channel, WifiP2pManager.ConnectionInfoListener { info ->
+                    activity.p2pinfo = info
+                    Log.v("p2pinfo", activity.p2pinfo.toString())
+                })
             }
             WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION -> {
                 // Respond to this device's wifi state changing

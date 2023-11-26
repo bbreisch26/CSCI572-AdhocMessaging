@@ -19,7 +19,6 @@ import com.csci572.adhocmessaging.ui.components.NavBar
 @ExperimentalMaterial3Api
 @Composable
 fun ChatScreen(navController: NavController, userId: String, activity: MainActivity) {
-    activity.connectToPeer(userId)
 
     Scaffold(
         topBar = {

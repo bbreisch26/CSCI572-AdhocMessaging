@@ -7,6 +7,7 @@ import android.net.wifi.p2p.WifiP2pConfig
 import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pDeviceList
 import android.net.wifi.p2p.WifiP2pManager
+import android.net.wifi.p2p.WifiP2pInfo
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest
 import android.os.AsyncTask
@@ -39,10 +40,16 @@ import java.io.OutputStream
 import java.net.ServerSocket
 import java.net.Socket
 import android.Manifest
+import android.annotation.SuppressLint
 import android.os.Build
+import android.os.Environment
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.core.app.ActivityCompat
+import java.io.File
+import java.io.FileOutputStream
 
 
 class MainActivity : ComponentActivity() {
@@ -61,16 +68,13 @@ class MainActivity : ComponentActivity() {
     }
     private var serverSocket: ServerSocket? = null
     private var clientSocket: Socket? = null
-
+    var p2pinfo: WifiP2pInfo? = null
     // List of peer devices
     var peerList : WifiP2pDeviceList? = null
     // Map of (MAC address, device name) items
-    var servicePeerList = mutableMapOf<String, String>()
+    var servicePeerList = mutableStateMapOf<String, String>()
     // Address of the current connection
 //    var currentConnectionAddress : String? = null
-    override fun onStart() {
-        super.onStart()
-    }
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,7 +83,6 @@ class MainActivity : ComponentActivity() {
         channel?.also { channel ->
             receiver = WiFiDirectBroadcastReceiver(manager, channel, this)
         }
-
         registerService()
         discoverService()
 
@@ -121,6 +124,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
         )
+        initiateServerSocket()
         setContent {
             AdhocmessagingTheme {
                 // A surface container using the 'background' color from the theme
@@ -138,7 +142,23 @@ class MainActivity : ComponentActivity() {
         super.onDestroy()
 
         manager?.cancelConnect(channel, null)
-        unregisterReceiver(receiver);
+        //Receiver already unregistered with onPause()
+        //if(receiver != null) {
+            //unregisterReceiver(receiver);
+        //}
+        manager?.clearLocalServices(channel, object : WifiP2pManager.ActionListener {
+            override fun onSuccess() {
+                // Command successful! Code isn't necessarily needed here,
+                Log.v("MainActivity","Successfully Removed Local Services ")
+
+                // Unless you want to update the UI or add logging statements.
+            }
+
+            override fun onFailure(code: Int) {
+                // Command failed.  Check for P2P_UNSUPPORTED, ERROR, or BUSY
+                Log.v("MainActivity", "Failure To Remove Local Services: " + code)
+            }
+            })
         closeSockets()
         manager?.stopPeerDiscovery(channel, null)
     }
@@ -230,69 +250,101 @@ class MainActivity : ComponentActivity() {
         val config = WifiP2pConfig()
         config.deviceAddress = address
         config.wps.setup = WpsInfo.PBC
-        channel?.also { channel ->
-            manager?.connect(channel, config, object : WifiP2pManager.ActionListener {
+        manager?.connect(channel, config, object : WifiP2pManager.ActionListener {
 
-                override fun onSuccess() {
-                    Log.v("MainActivity", "Successfully connected to peer: $address")
-                    initiateServerSocket()
-                }
+            override fun onSuccess() {
+                Log.v("MainActivity", "Successfully connected to peer: $address")
+            }
 
-                override fun onFailure(reason: Int) {
-                    //failure logic
-                    Log.v("MainActivity", "Failed to connect to peer: $address")
+            override fun onFailure(reason: Int) {
+                //failure logic
+                Log.v("MainActivity", "Failed to connect to peer: $address")
 
-                }
-            })
-        }
+            }
+        })
     }
     private fun initiateServerSocket() {
         // Create a server socket to listen for incoming messages
-        var serverSocket = ServerSocket(8888)
-        Handler(Looper.getMainLooper()).post {
             // Start a background thread to accept incoming connections
-            ServerSocketTask().execute()
-        }
+        ServerSocketTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+    }
+    fun sendMessage(address : String, message: String) {
+        Log.v("sendMessage", "Sending message: $message")
+        // Create a server socket to listen for incoming messages
+            // Start a background thread to accept incoming connections
+        //Have to use executeOnExecutor to use thread pool for async tasks
+        //https://stackoverflow.com/questions/31957815/android-asynctask-not-executing
+        Log.v("p2pinfo", p2pinfo.toString())
+        SendMessageTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, message, address);
     }
     private fun closeSockets() {
         serverSocket?.close()
         clientSocket?.close()
     }
     // AsyncTask to accept incoming connections in the background
-    private inner class ServerSocketTask : AsyncTask<Void, Void, Void>() {
+     private inner class ServerSocketTask(
+    ): AsyncTask<Void, Void, Void>() {
 
+        @Deprecated("Deprecated in Java")
         override fun doInBackground(vararg params: Void): Void? {
+            Log.v("ServerSocket", "Starting Server In Background")
+            val serverSocket = ServerSocket(8888)
             try {
                 // Accept incoming connections
-                clientSocket = serverSocket?.accept()
+                val client = serverSocket.accept()
+                Log.v("ServerSocket", "Accepted incoming socket connection")
+                val f = File(
+                    Environment.getExternalStorageDirectory().absolutePath +
+                        "/${applicationContext.packageName}/wifip2pshared-${System.currentTimeMillis()}.jpg")
+                val dirs = File(f.parent)
+
+                dirs.takeIf { it.doesNotExist() }?.apply {
+                    mkdirs()
+                }
+                //create file and copy stream to file
+                f.createNewFile()
+                val inputstream = client.getInputStream()
+                inputstream.copyTo(FileOutputStream(f))
+                //copyFile(inputstream, FileOutputStream(f))
+                serverSocket.close()
+                Log.v("ServerSocket", "Closed socket")
+                f.absolutePath
             } catch (e: IOException) {
                 Log.e("ServerSocketTask", "Error accepting connection: ${e.message}")
             }
-
             return null
         }
+        private fun File.doesNotExist(): Boolean = !exists()
+
     }
-    private inner class SendMessageTask : AsyncTask<String, Void, Void>() {
+    private inner class SendMessageTask : AsyncTask<String, Void, Void>(){
+        @Deprecated("Deprecated in Java")
         override fun doInBackground(vararg params: String): Void? {
             try {
+                val address = params[1]
+                val clientSocket = Socket(address,8888)
+                Log.v("sendMessage", "Successfully opened socket to peer: $address")
+
                 // Get the output stream of the client socket
-                val outputStream: OutputStream = clientSocket!!.getOutputStream()
+                val outputStream: OutputStream = clientSocket.getOutputStream()
 
                 // Write the message to the output stream
                 val message = params[0].toByteArray()
+
                 outputStream.write(message)
+                Log.v("sendMessage", "Sent Message : $message to $address")
+
                 outputStream.flush()
+                clientSocket.close()
             } catch (e: IOException) {
-                Log.e("SendMessageTask", "Error sending message: ${e.message}")
+                Log.e("sendMessage", "Error sending message: ${e.message}")
             }
 
             return null
         }
     }
-    fun sendMessage(address : String, message: String) {
-        Log.v("sendMessage", "Sending message: $message")
-        SendMessageTask().execute(message)
-    }
+
 }
 
 

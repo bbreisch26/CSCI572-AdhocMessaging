@@ -27,12 +27,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.csci572.adhocmessaging.MainActivity
 import com.csci572.adhocmessaging.ui.theme.Blue80
 
 data class User(val username: String, val MAC: String)
 @ExperimentalMaterial3Api
 @Composable
-fun UserCard(navController : NavController, user: User) {
+fun UserCard(navController : NavController, user: User, activity : MainActivity) {
     Card(//elevation = CardDefaults.cardElevation(
         //defaultElevation = 6.dp, hoveredElevation = 20.dp),
         colors = CardDefaults.cardColors(
@@ -41,7 +42,9 @@ fun UserCard(navController : NavController, user: User) {
         modifier = Modifier
         .fillMaxWidth()
         .padding(10.dp),
-        onClick = { navController.navigate("ChatScreen/{user}".replace(oldValue="{user}", newValue = user.MAC)) }
+        onClick = {
+            activity.connectToPeer(user.MAC)
+            navController.navigate("ChatScreen/{user}".replace(oldValue="{user}", newValue = user.MAC)) }
         ) {
             Text(
                 text = user.username,
