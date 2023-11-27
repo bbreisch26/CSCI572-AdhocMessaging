@@ -1,8 +1,14 @@
 (1) Team progress compared to milestones:
+Thanksgiving week up to today we have come much closer to what we originally envisioned for our app.
+We've been working very closely as a group to get past obstacles provided by the hardware and support
+for Wifi-Direct capability. Currently we have the app working on two phones with an established 
+connection between them. They're able to send messages back and forth while we finalize the UI and 
+data storage of recieved/sent messages. We haven't started collecting quantitative results or writing 
+the report so we're still a little behind schedule but trying to catch up with the time we have left.
 
 (2) Each team member's contribution:
 
-Michael Alvarez:
+Michael Alvarez: 
 
 Ben Breisch:
 
