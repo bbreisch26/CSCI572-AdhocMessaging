@@ -30,6 +30,7 @@ import java.net.Socket
 
 
 class MyWifiP2PApp {
+    var username: String = ""
     var manager: WifiP2pManager? = null
     var messageDatabase: MessageDatabase? = null
     var channel: WifiP2pManager.Channel? = null
@@ -86,6 +87,7 @@ class MyWifiP2PApp {
     @RequiresApi(Build.VERSION_CODES.M)
     fun setup(context: Context, userName: String) {
         this.context = context
+        this.username = userName
         this.messageDatabase = Room.databaseBuilder(
             context,
             MessageDatabase::class.java, "database-name"
@@ -293,24 +295,20 @@ class MyWifiP2PApp {
                     peerIPAddress = client?.inetAddress?.hostAddress
 
                     Log.v("ServerSocket", "Accepted incoming socket connection from ${client?.inetAddress?.hostAddress}")
-                    /*val f = File(
-                        Environment.getExternalStorageDirectory().absolutePath +
-                                "/${context?.packageName}/wifip2pshared-${System.currentTimeMillis()}.jpg")
-                    val dirs = File(f.parent)
 
-                    dirs.takeIf { it.doesNotExist() }?.apply {
-                        mkdirs()
-                    }*/
-                    //create file and copy stream to file
-                    //f.createNewFile()
                     val inputstream = client!!.getInputStream()
                     val inputAsString = inputstream.bufferedReader().use { it.readText() }
                     Log.v("ServerSocket", "Received message: $inputAsString")
-                    //inputstream.copyTo(FileOutputStream(f))
-                    //copyFile(inputstream, FileOutputStream(f))
+                    //format: username#message1234
+                    val inputList : List<String> = inputAsString.split("#",limit=2)
+                    Log.v("ServerSocket",inputList.toString())
+                    //put message into database
                     serverSocket?.close()
                     Log.v("ServerSocket", "Finished receiving message")
-                    //f.absolutePath
+                    if(inputList.size == 2 && inputList[1].isNotEmpty()) {
+                        messageDatabase?.messageDao()?.insert(Message(contactName=inputList[0], sourceIsMe = false, contents = inputList[1]))
+                    }
+
                 } catch (e: IOException) {
                     Log.e("ServerSocketTask", "Error accepting connection: ${e.message}")
                     return null
@@ -341,9 +339,11 @@ class MyWifiP2PApp {
                 val outputStream: OutputStream = clientSocket.getOutputStream()
 
                 // Write the message to the output stream
-                val message = params[0].toByteArray()
-                outputStream.write(message)
-                Log.v("sendMessage", "Sent Message : ${params[0]} to $address")
+                val message = params[0]
+                //format: username#message1234
+                val out = ("$username#$message")
+                outputStream.write(out.toByteArray())
+                Log.v("sendMessage", "Sent Message : $out to $address")
 
                 outputStream.flush()
                 clientSocket.close()
