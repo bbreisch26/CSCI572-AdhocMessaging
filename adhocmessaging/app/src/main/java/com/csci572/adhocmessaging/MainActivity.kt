@@ -54,77 +54,10 @@ import java.io.FileOutputStream
 
 class MainActivity : ComponentActivity() {
 
-    val manager: WifiP2pManager? by lazy(LazyThreadSafetyMode.NONE) {
-        getSystemService(Context.WIFI_P2P_SERVICE) as WifiP2pManager?
-    }
-
-    var channel: WifiP2pManager.Channel? = null
-    var receiver: WiFiDirectBroadcastReceiver? = null
-    val intentFilter = IntentFilter().apply {
-        addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION)
-        addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION)
-        addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION)
-        addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)
-    }
-    private var serverSocket: ServerSocket? = null
-    private var clientSocket: Socket? = null
-    var p2pinfo: WifiP2pInfo? = null
-    // List of peer devices
-    var peerList : WifiP2pDeviceList? = null
-    // Map of (MAC address, device name) items
-    var servicePeerList = mutableStateMapOf<String, String>()
-    // Address of the current connection
-//    var currentConnectionAddress : String? = null
+   var p2papp: MyWifiP2PApp? = null
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Set up Wifi-Direct Backend
-        channel = manager?.initialize(this, mainLooper, null)
-        channel?.also { channel ->
-            receiver = WiFiDirectBroadcastReceiver(manager, channel, this)
-        }
-        registerService()
-        discoverService()
-
-        var serviceRequest = WifiP2pDnsSdServiceRequest.newInstance()
-        manager?.addServiceRequest(
-            channel,
-            serviceRequest,
-            object : WifiP2pManager.ActionListener {
-                override fun onSuccess() {
-                    // Success!
-                    Log.v("MainActivity","Successful Add Service Request")
-
-                }
-
-                override fun onFailure(code: Int) {
-                    // Command failed.  Check for P2P_UNSUPPORTED, ERROR, or BUSY
-                    Log.v("MainActivity","Failure Add Service Request: " + code)
-
-                }
-            }
-        )
-
-        manager?.discoverServices(
-            channel,
-            object : WifiP2pManager.ActionListener {
-                override fun onSuccess() {
-                    // Success!
-                    Log.v("MainActivity","Successful Discover Services")
-                }
-
-                override fun onFailure(code: Int) {
-                    Log.v("MainActivity","Failure Discover Services: " + code)
-                    // Command failed. Check for P2P_UNSUPPORTED, ERROR, or BUSY
-                    when (code) {
-                        WifiP2pManager.P2P_UNSUPPORTED -> {
-                            Log.d("MainActivity", "Wi-Fi Direct isn't supported on this device.")
-                        }
-                    }
-                }
-            }
-        )
-        initiateServerSocket()
         setContent {
             AdhocmessagingTheme {
                 // A surface container using the 'background' color from the theme
@@ -140,211 +73,31 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        p2papp?.onDestroy()
 
-        manager?.cancelConnect(channel, null)
-        //Receiver already unregistered with onPause()
-        //if(receiver != null) {
-            //unregisterReceiver(receiver);
-        //}
-        manager?.clearLocalServices(channel, object : WifiP2pManager.ActionListener {
-            override fun onSuccess() {
-                // Command successful! Code isn't necessarily needed here,
-                Log.v("MainActivity","Successfully Removed Local Services ")
-
-                // Unless you want to update the UI or add logging statements.
-            }
-
-            override fun onFailure(code: Int) {
-                // Command failed.  Check for P2P_UNSUPPORTED, ERROR, or BUSY
-                Log.v("MainActivity", "Failure To Remove Local Services: " + code)
-            }
-            })
-        closeSockets()
-        manager?.stopPeerDiscovery(channel, null)
     }
 
     /* register the broadcast receiver with the intent values to be matched */
-    override fun onResume() {
+    //TODO: Implement receiver registration within new MyWifiP2PApp class
+    /*override fun onResume() {
         super.onResume()
-        receiver?.also { receiver ->
-            registerReceiver(receiver, intentFilter)
+        if(p2papp != null) {
+            p2papp?.receiver?.also { receiver ->
+                registerReceiver(receiver, p2papp!!.intentFilter)
+            }
         }
     }
 
     /* unregister the broadcast receiver */
     override fun onPause() {
         super.onPause()
-        receiver?.also { receiver ->
-            unregisterReceiver(receiver)
-        }
-    }
-
-    private fun registerService() {
-        //  Create a string map containing information about your service.
-        val record: Map<String, String> = mapOf(
-            "listenport" to "8888",
-            "buddyname" to "John Doe${(Math.random() * 1000).toInt()}",
-            "available" to "visible"
-        )
-
-        // Service information.  Pass it an instance name, service type
-        // _protocol._transportlayer , and the map containing
-        // information other devices will want once they connect to this one.
-        val serviceInfo =
-            WifiP2pDnsSdServiceInfo.newInstance("_test", "_presence._tcp", record)
-
-        // Add the local service, sending the service info, network channel,
-        // and listener that will be used to indicate success or failure of
-        // the request.
-        manager?.addLocalService(channel, serviceInfo, object : WifiP2pManager.ActionListener {
-            override fun onSuccess() {
-                // Command successful! Code isn't necessarily needed here,
-                Log.v("MainActivity","Successful Add Local Service ")
-
-                // Unless you want to update the UI or add logging statements.
+        if(p2papp != null) {
+            p2papp?.receiver?.also { receiver ->
+                unregisterReceiver(receiver)
             }
-
-            override fun onFailure(code: Int) {
-                // Command failed.  Check for P2P_UNSUPPORTED, ERROR, or BUSY
-                Log.v("MainActivity","Failure Add Local Service: " + code)
-            }
-        })
-    }
-
-    private fun discoverService() {
-        /* Callback includes:
-         * fullDomain: full domain name: e.g. "printer._ipp._tcp.local."
-         * record: TXT record dta as a map of key/value pairs.
-         * device: The device running the advertised service.
-         */
-        val txtListener = WifiP2pManager.DnsSdTxtRecordListener { fullDomain, record, device ->
-            Log.v("MainActivity","DnsSdTxtRecord available -$record")
-            device.status
-            record["buddyname"]?.also {
-                servicePeerList[device.deviceAddress] = it
-            }
-
         }
 
-        val servListener = WifiP2pManager.DnsSdServiceResponseListener { instanceName, registrationType, resourceType ->
-            // Update the device name with the human-friendly version from
-            // the DnsTxtRecord, assuming one arrived.
-            resourceType.deviceName = servicePeerList[resourceType.deviceAddress] ?: resourceType.deviceName
-
-            // Add to the custom adapter defined specifically for showing
-            // wifi devices.
-//            val fragment = fragmentManager
-//                .findFragmentById(R.id.frag_peerlist) as WiFiDirectServicesList
-//            (fragment.listAdapter as WiFiDevicesAdapter).apply {
-//                add(resourceType)
-//                notifyDataSetChanged()
-//            }
-
-            Log.v("MainActivity", "onBonjourServiceAvailable $instanceName")
-        }
-
-        manager?.setDnsSdResponseListeners(channel, servListener, txtListener)
-    }
-
-    fun connectToPeer(address : String) {
-        val config = WifiP2pConfig()
-        config.deviceAddress = address
-        config.wps.setup = WpsInfo.PBC
-        manager?.connect(channel, config, object : WifiP2pManager.ActionListener {
-
-            override fun onSuccess() {
-                Log.v("MainActivity", "Successfully connected to peer: $address")
-            }
-
-            override fun onFailure(reason: Int) {
-                //failure logic
-                Log.v("MainActivity", "Failed to connect to peer: $address")
-
-            }
-        })
-    }
-    private fun initiateServerSocket() {
-        // Create a server socket to listen for incoming messages
-            // Start a background thread to accept incoming connections
-        ServerSocketTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-    }
-    fun sendMessage(address : String, message: String) {
-        Log.v("sendMessage", "Sending message: $message")
-        // Create a server socket to listen for incoming messages
-            // Start a background thread to accept incoming connections
-        //Have to use executeOnExecutor to use thread pool for async tasks
-        //https://stackoverflow.com/questions/31957815/android-asynctask-not-executing
-        Log.v("p2pinfo", p2pinfo.toString())
-        SendMessageTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, message, address);
-    }
-    private fun closeSockets() {
-        serverSocket?.close()
-        clientSocket?.close()
-    }
-    // AsyncTask to accept incoming connections in the background
-     private inner class ServerSocketTask(
-    ): AsyncTask<Void, Void, Void>() {
-
-        @Deprecated("Deprecated in Java")
-        override fun doInBackground(vararg params: Void): Void? {
-            Log.v("ServerSocket", "Starting Server In Background")
-            val serverSocket = ServerSocket(8888)
-            try {
-                // Accept incoming connections
-                val client = serverSocket.accept()
-                Log.v("ServerSocket", "Accepted incoming socket connection")
-                val f = File(
-                    Environment.getExternalStorageDirectory().absolutePath +
-                        "/${applicationContext.packageName}/wifip2pshared-${System.currentTimeMillis()}.jpg")
-                val dirs = File(f.parent)
-
-                dirs.takeIf { it.doesNotExist() }?.apply {
-                    mkdirs()
-                }
-                //create file and copy stream to file
-                f.createNewFile()
-                val inputstream = client.getInputStream()
-                inputstream.copyTo(FileOutputStream(f))
-                //copyFile(inputstream, FileOutputStream(f))
-                serverSocket.close()
-                Log.v("ServerSocket", "Closed socket")
-                f.absolutePath
-            } catch (e: IOException) {
-                Log.e("ServerSocketTask", "Error accepting connection: ${e.message}")
-            }
-            return null
-        }
-        private fun File.doesNotExist(): Boolean = !exists()
-
-    }
-    private inner class SendMessageTask : AsyncTask<String, Void, Void>(){
-        @Deprecated("Deprecated in Java")
-        override fun doInBackground(vararg params: String): Void? {
-            try {
-                val address = params[1]
-                val clientSocket = Socket(address,8888)
-                Log.v("sendMessage", "Successfully opened socket to peer: $address")
-
-                // Get the output stream of the client socket
-                val outputStream: OutputStream = clientSocket.getOutputStream()
-
-                // Write the message to the output stream
-                val message = params[0].toByteArray()
-
-                outputStream.write(message)
-                Log.v("sendMessage", "Sent Message : $message to $address")
-
-                outputStream.flush()
-                clientSocket.close()
-            } catch (e: IOException) {
-                Log.e("sendMessage", "Error sending message: ${e.message}")
-            }
-
-            return null
-        }
-    }
-
+    }*/
 }
 
 

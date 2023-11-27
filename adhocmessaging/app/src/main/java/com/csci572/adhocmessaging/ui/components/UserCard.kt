@@ -28,12 +28,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.csci572.adhocmessaging.MainActivity
+import com.csci572.adhocmessaging.MyWifiP2PApp
 import com.csci572.adhocmessaging.ui.theme.Blue80
 
 data class User(val username: String, val MAC: String)
 @ExperimentalMaterial3Api
 @Composable
-fun UserCard(navController : NavController, user: User, activity : MainActivity) {
+fun UserCard(navController : NavController, user: User, p2papp : MyWifiP2PApp) {
     Card(//elevation = CardDefaults.cardElevation(
         //defaultElevation = 6.dp, hoveredElevation = 20.dp),
         colors = CardDefaults.cardColors(
@@ -43,7 +44,7 @@ fun UserCard(navController : NavController, user: User, activity : MainActivity)
         .fillMaxWidth()
         .padding(10.dp),
         onClick = {
-            activity.connectToPeer(user.MAC)
+            p2papp.connectToPeer(user.MAC)
             navController.navigate("ChatScreen/{user}".replace(oldValue="{user}", newValue = user.MAC)) }
         ) {
             Text(

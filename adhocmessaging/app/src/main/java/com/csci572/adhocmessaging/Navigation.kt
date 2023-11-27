@@ -26,8 +26,12 @@ fun Navigation(activity: MainActivity) {
             HomeScreen(navController = navController)
         }
         composable(
-            route = "UserScreen") {
-            UserScreen(navController = navController, activity = activity)
+            route = "UserScreen/{name}") { backStackEntry ->
+            val userName = backStackEntry.arguments?.getString("name")
+            if (userName != null) {
+                UserScreen(navController = navController, activity, userName)
+
+            }
         }
         composable(
             route = "ChatScreen/{userId}"

@@ -2,6 +2,8 @@ package com.csci572.adhocmessaging.ui.components
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
+import android.view.KeyEvent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,6 +13,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -28,12 +32,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,6 +52,7 @@ import com.csci572.adhocmessaging.ui.theme.BlueGray80
 import com.csci572.adhocmessaging.ui.theme.Gray80
 import java.io.File
 
+private var nameField : String = ""
 @ExperimentalMaterial3Api
 @Composable
 fun Login(navController: NavController) {
@@ -72,7 +81,7 @@ fun Login(navController: NavController) {
                     .wrapContentHeight(),
                 fontSize = 18.sp
             )
-            nameTextField()
+            nameTextField(navController)
 
         }
         Row(horizontalArrangement = Arrangement.Center) {
@@ -81,7 +90,7 @@ fun Login(navController: NavController) {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                SignInButton(navigateUserScreen = { navController.navigate("UserScreen") })
+                SignInButton(navigateUserScreen = { navController.navigate("UserScreen/{name}".replace(oldValue="{name}", newValue = nameField))})
             }
         }
     }
@@ -96,19 +105,29 @@ fun SignInButton(navigateUserScreen: () -> Unit) {
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @ExperimentalMaterial3Api
 @Composable
-fun nameTextField() {
+fun nameTextField(navController : NavController) {
     var value by remember { mutableStateOf("") }
+    val keyboardController = LocalSoftwareKeyboardController.current
     OutlinedTextField(
         value = value,
         onValueChange = { newText ->
             value = newText
+            nameField = value
         },
         colors = TextFieldDefaults.textFieldColors(containerColor = MaterialTheme.colorScheme.background, textColor = MaterialTheme.colorScheme.onBackground),
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = {
+            keyboardController?.hide()
+            navController.navigate("UserScreen/{name}".replace(oldValue="{name}", newValue = nameField))
+        }),
         modifier = Modifier
             .background(MaterialTheme.colorScheme.tertiary)
             .border(1.dp, Color.DarkGray)
+
 
     )
 }
