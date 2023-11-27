@@ -40,7 +40,9 @@ class MyWifiP2PApp {
             addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)
         }
         private var serverSocket: ServerSocket? = null
-        private var clientSocket: Socket? = null
+        private var serverSocketTask: ServerSocketTask? = null
+        private val serverPort = 8888
+
         var p2pinfo: WifiP2pInfo? = null
         // List of peer devices
         var peerList : WifiP2pDeviceList? = null
@@ -127,7 +129,7 @@ class MyWifiP2PApp {
         private fun registerService(userName: String) {
             //  Create a string map containing information about your service.
             val record: Map<String, String> = mapOf(
-                "listenport" to "8888",
+                "listenport" to serverPort.toString(),
                 "buddyname" to userName,
                 "available" to "visible"
             )
@@ -225,14 +227,17 @@ class MyWifiP2PApp {
                     Log.v("MainActivity", "Failure To Remove Local Services: " + code)
                 }
             })
-            closeSockets()
+            serverSocketTask?.cancel(true)
+            serverSocket?.close()
+
             manager?.stopPeerDiscovery(channel, null)
         }
         private fun initiateServerSocket() {
             // Create a server socket to listen for incoming messages
             // Start a background thread to accept incoming connections
-            ServerSocketTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
+            serverSocket = ServerSocket(serverPort)
+            serverSocketTask = ServerSocketTask()
+            serverSocketTask?.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
         }
 
 
@@ -243,12 +248,9 @@ class MyWifiP2PApp {
             //Have to use executeOnExecutor to use thread pool for async tasks
             //https://stackoverflow.com/questions/31957815/android-asynctask-not-executing
             Log.v("p2pinfo", p2pinfo.toString())
-            SendMessageTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, message, address);
+            SendMessageTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, message, address)
         }
-        private fun closeSockets() {
-            serverSocket?.close()
-            clientSocket?.close()
-        }
+
         // AsyncTask to accept incoming connections in the background
         private inner class ServerSocketTask(
         ): AsyncTask<Void, Void, Void>() {
@@ -256,10 +258,12 @@ class MyWifiP2PApp {
             @Deprecated("Deprecated in Java")
             override fun doInBackground(vararg params: Void): Void? {
                 Log.v("ServerSocket", "Starting Server In Background")
-                val serverSocket = ServerSocket(8888)
+//                val serverSocket = ServerSocket(serverPort)
                 try {
                     // Accept incoming connections
-                    val client = serverSocket.accept()
+                    val client = serverSocket?.accept()
+                    if (isCancelled()) { return null }
+
                     Log.v("ServerSocket", "Accepted incoming socket connection")
                     val f = File(
                         Environment.getExternalStorageDirectory().absolutePath +
@@ -271,11 +275,11 @@ class MyWifiP2PApp {
                     }
                     //create file and copy stream to file
                     f.createNewFile()
-                    val inputstream = client.getInputStream()
+                    val inputstream = client!!.getInputStream()
                     inputstream.copyTo(FileOutputStream(f))
                     //copyFile(inputstream, FileOutputStream(f))
-                    serverSocket.close()
-                    Log.v("ServerSocket", "Closed socket")
+//                    serverSocket?.close()
+                    Log.v("ServerSocket", "Finished receiving message")
                     f.absolutePath
                 } catch (e: IOException) {
                     Log.e("ServerSocketTask", "Error accepting connection: ${e.message}")
@@ -290,7 +294,7 @@ class MyWifiP2PApp {
             override fun doInBackground(vararg params: String): Void? {
                 try {
                     val address = params[1]
-                    val clientSocket = Socket(address,8888)
+                    val clientSocket = Socket(address,serverPort)
                     Log.v("sendMessage", "Successfully opened socket to peer: $address")
 
                     // Get the output stream of the client socket
