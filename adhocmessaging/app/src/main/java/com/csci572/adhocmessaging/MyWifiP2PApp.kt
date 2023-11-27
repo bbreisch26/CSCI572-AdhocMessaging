@@ -294,7 +294,7 @@ class MyWifiP2PApp {
             override fun doInBackground(vararg params: String): Void? {
                 try {
                     val address = params[1]
-                    val clientSocket = Socket(address,serverPort)
+                    val clientSocket = Socket(address, serverPort)
                     Log.v("sendMessage", "Successfully opened socket to peer: $address")
 
                     // Get the output stream of the client socket
