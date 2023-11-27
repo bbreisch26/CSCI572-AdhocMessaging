@@ -285,37 +285,45 @@ class MyWifiP2PApp {
         override fun doInBackground(vararg params: Void): Void? {
             Log.v("ServerSocket", "Starting Server In Background")
 //                val serverSocket = ServerSocket(serverPort)
-            try {
-                // Accept incoming connections
-                val client = serverSocket?.accept()
-                if (isCancelled()) { return null }
-                peerIPAddress = client?.inetAddress?.hostAddress
+            while(true) {
+                try {
+                    // Accept incoming connections
+                    val client = serverSocket?.accept()
+                    if (isCancelled()) { return null }
+                    peerIPAddress = client?.inetAddress?.hostAddress
 
-                Log.v("ServerSocket", "Accepted incoming socket connection from ${client?.inetAddress?.hostAddress}")
-                if client.
-                val f = File(
-                    Environment.getExternalStorageDirectory().absolutePath +
-                            "/${context?.packageName}/wifip2pshared-${System.currentTimeMillis()}.jpg")
-                val dirs = File(f.parent)
+                    Log.v("ServerSocket", "Accepted incoming socket connection from ${client?.inetAddress?.hostAddress}")
+                    /*val f = File(
+                        Environment.getExternalStorageDirectory().absolutePath +
+                                "/${context?.packageName}/wifip2pshared-${System.currentTimeMillis()}.jpg")
+                    val dirs = File(f.parent)
 
-                dirs.takeIf { it.doesNotExist() }?.apply {
-                    mkdirs()
+                    dirs.takeIf { it.doesNotExist() }?.apply {
+                        mkdirs()
+                    }*/
+                    //create file and copy stream to file
+                    //f.createNewFile()
+                    val inputstream = client!!.getInputStream()
+                    val inputAsString = inputstream.bufferedReader().use { it.readText() }
+                    Log.v("ServerSocket", "Received message: $inputAsString")
+                    //inputstream.copyTo(FileOutputStream(f))
+                    //copyFile(inputstream, FileOutputStream(f))
+                    serverSocket?.close()
+                    Log.v("ServerSocket", "Finished receiving message")
+                    //f.absolutePath
+                } catch (e: IOException) {
+                    Log.e("ServerSocketTask", "Error accepting connection: ${e.message}")
+                    return null
                 }
-                //create file and copy stream to file
-                f.createNewFile()
-                val data = client!!.read()
-                Log.v("")
-                val inputstream = client!!.getInputStream()
-                val output
-                vinputstream.copyTo(FileOutputStream(f))
-                //copyFile(inputstream, FileOutputStream(f))
-                serverSocket?.close()
-                Log.v("ServerSocket", "Finished receiving message")
-                f.absolutePath
-            } catch (e: IOException) {
-                Log.e("ServerSocketTask", "Error accepting connection: ${e.message}")
             }
-            return null
+
+        }
+        //restart server task once it is done executing
+        override fun onPostExecute(result: Void?) {
+            super.onPostExecute(result)
+            serverSocket = ServerSocket(serverPort)
+            serverSocketTask = ServerSocketTask()
+            serverSocketTask?.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
         }
 
         private fun File.doesNotExist(): Boolean = !exists()
