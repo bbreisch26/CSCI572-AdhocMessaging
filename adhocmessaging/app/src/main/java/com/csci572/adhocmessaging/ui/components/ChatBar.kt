@@ -36,7 +36,7 @@ fun ChatBar(address: String, activity: MainActivity) {
 
         //messageInputViewModel.sendMessage(inputValue)
         Log.v("ChatScreen", "String to send : $inputValue")
-        activity.p2papp?.sendMessage(address, inputValue)
+        activity.p2papp?.sendMessage(inputValue)
         inputValue = ""
 
     }

@@ -42,7 +42,7 @@ class MyWifiP2PApp {
         private var serverSocket: ServerSocket? = null
         private var serverSocketTask: ServerSocketTask? = null
         private val serverPort = 8888
-
+        var peerIPAddress : String? = ""
         var p2pinfo: WifiP2pInfo? = null
         // List of peer devices
         var peerList : WifiP2pDeviceList? = null
@@ -57,17 +57,24 @@ class MyWifiP2PApp {
         var connectionInfoListener: WifiP2pManager.ConnectionInfoListener = WifiP2pManager.ConnectionInfoListener { wifiP2pInfo ->
             Log.v("MainActivity",wifiP2pInfo.toString())
             Log.v("MainActivity", manager?.requestGroupInfo(channel, groupInfoListener).toString())
+            //p2pinfo
+            p2pinfo = wifiP2pInfo
             if (wifiP2pInfo.groupFormed && wifiP2pInfo.isGroupOwner) {
                 Log.v("MainActivity","Group formed and the owner")
                 Log.v("MainActivity","Starting Server")
-
+                //figure out peerIPAddress
+                //wait
                 //connState.text = getString(R.string.host)
                 //serverClass = ServerClass(this)
                 //serverClass.start()
                 Log.i("conn","serverClass started!")
-            } else if (wifiP2pInfo.groupFormed) {
+            } else if (wifiP2pInfo.groupFormed && !wifiP2pInfo.isGroupOwner) {
                 Log.v("MainActivity","Group formed but not the owner")
                 Log.v("MainActivity","Starting Client")
+                peerIPAddress = wifiP2pInfo.groupOwnerAddress.hostAddress
+                Log.v("MainActivity", "Sending IP Address HELLO message to group owner")
+                sendMessage("") //send message to group owner
+
 
                 //connState.text = getString(R.string.client)
                 //clientClass = ClientClass(wifiP2pInfo.groupOwnerAddress, this)
@@ -194,7 +201,6 @@ class MyWifiP2PApp {
         fun connectToPeer(address : String) {
             val config = WifiP2pConfig()
             config.deviceAddress = address
-            config.groupOwnerIntent = 15
             manager?.connect(channel, config, object : WifiP2pManager.ActionListener {
 
                 override fun onSuccess() {
@@ -235,20 +241,25 @@ class MyWifiP2PApp {
         private fun initiateServerSocket() {
             // Create a server socket to listen for incoming messages
             // Start a background thread to accept incoming connections
+            Log.v("ServerSocket", "Attempting to start Server Socket Task")
             serverSocket = ServerSocket(serverPort)
             serverSocketTask = ServerSocketTask()
             serverSocketTask?.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
         }
 
 
-        fun sendMessage(address : String, message: String) {
+        fun sendMessage(message: String) {
             Log.v("sendMessage", "Sending message: $message")
             // Create a server socket to listen for incoming messages
             // Start a background thread to accept incoming connections
             //Have to use executeOnExecutor to use thread pool for async tasks
             //https://stackoverflow.com/questions/31957815/android-asynctask-not-executing
-            Log.v("p2pinfo", p2pinfo.toString())
-            SendMessageTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, message, address)
+            if(peerIPAddress == "") {
+                Log.v("sendMessage","Tried to send message $message but peerIpAddress is empty")
+            }
+            else {
+                SendMessageTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, message, peerIPAddress)
+            }
         }
 
         // AsyncTask to accept incoming connections in the background
@@ -263,8 +274,9 @@ class MyWifiP2PApp {
                     // Accept incoming connections
                     val client = serverSocket?.accept()
                     if (isCancelled()) { return null }
+                    peerIPAddress = client?.inetAddress?.hostAddress
 
-                    Log.v("ServerSocket", "Accepted incoming socket connection")
+                    Log.v("ServerSocket", "Accepted incoming socket connection from ${client?.inetAddress?.hostAddress}")
                     val f = File(
                         Environment.getExternalStorageDirectory().absolutePath +
                                 "/${context?.packageName}/wifip2pshared-${System.currentTimeMillis()}.jpg")
@@ -278,7 +290,7 @@ class MyWifiP2PApp {
                     val inputstream = client!!.getInputStream()
                     inputstream.copyTo(FileOutputStream(f))
                     //copyFile(inputstream, FileOutputStream(f))
-//                    serverSocket?.close()
+                    serverSocket?.close()
                     Log.v("ServerSocket", "Finished receiving message")
                     f.absolutePath
                 } catch (e: IOException) {
@@ -304,7 +316,7 @@ class MyWifiP2PApp {
                     val message = params[0].toByteArray()
 
                     outputStream.write(message)
-                    Log.v("sendMessage", "Sent Message : $message to $address")
+                    Log.v("sendMessage", "Sent Message : ${params[0]} to $address")
 
                     outputStream.flush()
                     clientSocket.close()
