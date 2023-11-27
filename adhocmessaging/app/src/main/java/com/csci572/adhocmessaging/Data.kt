@@ -17,7 +17,7 @@ import androidx.room.Update
 @Entity
 data class Message (
     @PrimaryKey val id: Int? = null,
-    @ColumnInfo(name = "contact_mac") val contactMAC: String,
+    @ColumnInfo(name = "contact_name") val contactName: String,
     @ColumnInfo(name = "source_is_me") val sourceIsMe: Boolean,
     @ColumnInfo(name = "contents") val contents: String
 )
@@ -31,12 +31,11 @@ interface MessageDao {
     @Delete
     fun delete(message: Message)
 
-    @Query("SELECT * FROM message WHERE contact_mac = :contactMAC")
-    fun getMessagesForContact(contactMAC: String)
+    @Query("SELECT * FROM message WHERE contact_name = :contactName")
+    fun getMessagesForContact(contactName: String): List<Message>
 }
 
 @Database(entities = [Message::class], version = 1)
 abstract class MessageDatabase : RoomDatabase() {
-
     abstract fun messageDao(): MessageDao
 }
