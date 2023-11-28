@@ -21,4 +21,8 @@ I went out and procured a Google Pixel 7a phone, which has been phenomenal. I ha
 the backend and front end, being the only person with a working test set up. This week we aim to conduct experiments
 and collect data.
 
-Luke Beukelman:
+Luke Beukelman: I met with the rest of the team as mentioned in the above updates. I was working on trying to figure
+out how to split up activities so that the application stream is more streamlined. After a couple of hours and some
+experimentation, I found out that, while our current method is somewhat sketchy, doing it any other way would take too
+much refactoring. I set up a class for storing messages in a database, which is yet to be integrated but the database
+connection is working.
