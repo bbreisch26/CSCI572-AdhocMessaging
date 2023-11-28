@@ -1,6 +1,8 @@
 package com.csci572.adhocmessaging
 
 import android.Manifest
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.rememberNavController
@@ -10,6 +12,7 @@ import com.csci572.adhocmessaging.ui.screens.ChatScreen
 import com.csci572.adhocmessaging.ui.screens.HomeScreen
 import com.csci572.adhocmessaging.ui.screens.PermissionScreen
 import com.csci572.adhocmessaging.ui.screens.UserScreen
+@RequiresApi(Build.VERSION_CODES.M)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Navigation(activity: MainActivity) {

@@ -35,7 +35,7 @@ fun UserScreen(navController: NavController, activity: MainActivity, userName: S
 
     Scaffold(
         topBar = {
-            NavBar(navController, "Nearby Users")
+            NavBar(navController, "Nearby Users", false)
         },
         containerColor = MaterialTheme.colorScheme.background
     ) {
