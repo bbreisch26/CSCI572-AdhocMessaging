@@ -17,9 +17,12 @@ import android.os.Environment
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.toMutableStateList
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.ContextCompat.registerReceiver
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.room.Room
 import java.io.File
 import java.io.FileOutputStream
@@ -278,6 +281,7 @@ class MyWifiP2PApp {
             SendMessageTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, message, peerIPAddress)
         }
     }
+
 
     // AsyncTask to accept incoming connections in the background
     private inner class ServerSocketTask(

@@ -45,7 +45,7 @@ fun UserCard(navController : NavController, user: User, p2papp : MyWifiP2PApp) {
         .padding(10.dp),
         onClick = {
             p2papp.connectToPeer(user.MAC)
-            navController.navigate("ChatScreen/{user}".replace(oldValue="{user}", newValue = user.MAC)) }
+            navController.navigate("ChatScreen/{user}".replace(oldValue="{user}", newValue = user.username)) }
         ) {
             Text(
                 text = user.username,

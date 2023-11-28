@@ -27,17 +27,24 @@ import androidx.compose.ui.unit.dp
 import com.csci572.adhocmessaging.MainActivity
 import com.csci572.adhocmessaging.ui.theme.Blue80
 import com.csci572.adhocmessaging.ui.theme.Gray80
+import com.csci572.adhocmessaging.Message
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatBar(address: String, activity: MainActivity) {
+fun ChatBar(userId: String, activity: MainActivity) {
     var inputValue by remember { mutableStateOf("") }
     fun sendMessage() {
-
         //messageInputViewModel.sendMessage(inputValue)
+        val temp = inputValue
         Log.v("ChatScreen", "String to send : $inputValue")
         activity.p2papp?.sendMessage(inputValue)
         inputValue = ""
+        CoroutineScope(IO).launch {
+            activity.p2papp?.messageDatabase?.messageDao()?.insert(Message(contactName = userId, sourceIsMe = true, contents = temp))
+        }
 
     }
     BottomAppBar(containerColor = Blue80) {

@@ -1,6 +1,7 @@
 package com.csci572.adhocmessaging
 
 import android.content.Context
+import androidx.lifecycle.LiveData
 import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Database
@@ -31,8 +32,10 @@ interface MessageDao {
     @Delete
     fun delete(message: Message)
 
-    @Query("SELECT * FROM message WHERE contact_name = :contactName")
-    fun getMessagesForContact(contactName: String): List<Message>
+
+    //returns livedata<message> to signal to Room that query can be performed asynch
+    @Query("SELECT * FROM message WHERE contact_name = :contactName LIMIT 100")
+    fun getMessagesForContact(contactName: String): LiveData<List<Message>>
 }
 
 @Database(entities = [Message::class], version = 1)
