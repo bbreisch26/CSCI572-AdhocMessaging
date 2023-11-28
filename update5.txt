@@ -8,7 +8,12 @@ the report so we're still a little behind schedule but trying to catch up with t
 
 (2) Each team member's contribution:
 
-Michael Alvarez: 
+Michael Alvarez: I met with the rest of the team last Tuesday and Today as we worked through more live 
+testing. Together we diagnosed issues and fixed them as we achieved more and more functionality. 
+Specifically, I worked heavily with Ben on debgugging the connection and socket code that allows for messages
+to be sent between the devices running the app. The biggest issues being caused by hardware incompatability
+and discovering peer devices IP addresses after the Wifi-Direct Group has been initialized. I'm also starting 
+to prepare for how we can run experiments and test the performance of our application.
 
 Ben Breisch:
 
