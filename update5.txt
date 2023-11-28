@@ -15,6 +15,10 @@ to be sent between the devices running the app. The biggest issues being caused 
 and discovering peer devices IP addresses after the Wifi-Direct Group has been initialized. I'm also starting 
 to prepare for how we can run experiments to test the performance of our application.
 
-Ben Breisch:
+Ben Breisch: We met as a team last week on Tuesday and today so that we could work on the app implementation.
+We discovered that the low-cost Blu phone I had purchased for the project was not actually compatible with WiFi p2p.
+I went out and procured a Google Pixel 7a phone, which has been phenomenal. I have completed most of the work on
+the backend and front end, being the only person with a working test set up. This week we aim to conduct experiments
+and collect data.
 
 Luke Beukelman:
