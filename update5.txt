@@ -13,7 +13,7 @@ testing. Together we diagnosed issues and fixed them as we achieved more and mor
 Specifically, I worked heavily with Ben on debgugging the connection and socket code that allows for messages
 to be sent between the devices running the app. The biggest issues being caused by hardware incompatability
 and discovering peer devices IP addresses after the Wifi-Direct Group has been initialized. I'm also starting 
-to prepare for how we can run experiments and test the performance of our application.
+to prepare for how we can run experiments to test the performance of our application.
 
 Ben Breisch:
 
