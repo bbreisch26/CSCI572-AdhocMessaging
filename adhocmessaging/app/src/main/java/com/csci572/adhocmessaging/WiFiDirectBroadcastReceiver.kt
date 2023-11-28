@@ -51,7 +51,6 @@ class WiFiDirectBroadcastReceiver(
             WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION -> {
                 // Respond to new connection or disconnections
                 Log.v("BroadCast", "WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION")
-                //WifiP2pManager.EXTRA_NETWORK_INFO
 
                 val networkInfo: NetworkInfo? = intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO)
                 Log.v("NetworkInfo", networkInfo.toString())
@@ -59,7 +58,7 @@ class WiFiDirectBroadcastReceiver(
                 manager?.requestNetworkInfo(channel, object : WifiP2pManager.NetworkInfoListener {
                     override fun onNetworkInfoAvailable(networkInfo: NetworkInfo) {
                         Log.v("MainActivity", "Network Info Available")
-                        Log.v("MainActivity", networkInfo.toString()) // TODO: WifiP2pInfo should not be empty
+                        Log.v("MainActivity", networkInfo.toString())
                     }
                 })
             }

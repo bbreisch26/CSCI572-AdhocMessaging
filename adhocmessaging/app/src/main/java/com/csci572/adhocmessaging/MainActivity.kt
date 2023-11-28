@@ -78,8 +78,7 @@ class MainActivity : ComponentActivity() {
     }
 
     /* register the broadcast receiver with the intent values to be matched */
-    //TODO: Implement receiver registration within new MyWifiP2PApp class
-    /*override fun onResume() {
+    override fun onResume() {
         super.onResume()
         if(p2papp != null) {
             p2papp?.receiver?.also { receiver ->
@@ -97,7 +96,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-    }*/
+    }
 }
 
 

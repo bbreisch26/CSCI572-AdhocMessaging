@@ -52,7 +52,7 @@ fun ChatScreen(navController: NavController, userId: String, activity: MainActiv
     })
     Scaffold(
         topBar = {
-            NavBar(navController, userId)
+            NavBar(navController, userId, true)
         },
         bottomBar = {
             ChatBar(userId, activity)
