@@ -46,7 +46,7 @@ fun UserScreen(navController: NavController, activity: MainActivity, userName: S
             servicePeerList.forEach {
                 UserCard(navController, User(it.value, it.key), activity.p2papp!!)
             }
-            UserCard(navController, User("beep", "boop"), activity.p2papp!!)
+//            UserCard(navController, User("beep", "boop"), activity.p2papp!!)
         }
     }
 }
