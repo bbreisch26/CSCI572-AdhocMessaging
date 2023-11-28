@@ -290,7 +290,6 @@ class MyWifiP2PApp {
         @Deprecated("Deprecated in Java")
         override fun doInBackground(vararg params: Void): Void? {
             Log.v("ServerSocket", "Starting Server In Background")
-//                val serverSocket = ServerSocket(serverPort)
             while(true) {
                 try {
                     // Accept incoming connections
@@ -307,12 +306,10 @@ class MyWifiP2PApp {
                     val inputList : List<String> = inputAsString.split("#",limit=2)
                     Log.v("ServerSocket",inputList.toString())
                     //put message into database
-                    serverSocket?.close()
                     Log.v("ServerSocket", "Finished receiving message")
                     if(inputList.size == 2 && inputList[1].isNotEmpty()) {
                         messageDatabase?.messageDao()?.insert(Message(contactName=inputList[0], sourceIsMe = false, contents = inputList[1]))
                     }
-
                 } catch (e: IOException) {
                     Log.e("ServerSocketTask", "Error accepting connection: ${e.message}")
                     return null
@@ -323,21 +320,20 @@ class MyWifiP2PApp {
         //restart server task once it is done executing
         override fun onPostExecute(result: Void?) {
             super.onPostExecute(result)
-            serverSocket = ServerSocket(serverPort)
             serverSocketTask = ServerSocketTask()
             serverSocketTask?.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
         }
 
         private fun File.doesNotExist(): Boolean = !exists()
 
-        }
-        private inner class SendMessageTask : AsyncTask<String, Void, Void>(){
-            @Deprecated("Deprecated in Java")
-            override fun doInBackground(vararg params: String): Void? {
-                try {
-                    val address = params[1]
-                    val clientSocket = Socket(address,serverPort)
-                    Log.v("sendMessage", "Successfully opened socket to peer: $address")
+    }
+    private inner class SendMessageTask : AsyncTask<String, Void, Void>(){
+        @Deprecated("Deprecated in Java")
+        override fun doInBackground(vararg params: String): Void? {
+            try {
+                val address = params[1]
+                val clientSocket = Socket(address,serverPort)
+                Log.v("sendMessage", "Successfully opened socket to peer: $address")
 
                 // Get the output stream of the client socket
                 val outputStream: OutputStream = clientSocket.getOutputStream()
@@ -354,7 +350,6 @@ class MyWifiP2PApp {
             } catch (e: IOException) {
                 Log.e("sendMessage", "Error sending message: ${e.message}")
             }
-
             return null
         }
     }

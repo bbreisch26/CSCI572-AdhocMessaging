@@ -1,8 +1,19 @@
 (1) Team progress compared to milestones:
+Thanksgiving week up to today we have come much closer to what we originally envisioned for our app.
+We've been working very closely as a group to get past obstacles provided by the hardware and support
+for Wifi-Direct capability. Currently we have the app working on two phones with an established 
+connection between them. They're able to send messages back and forth while we finalize the UI and 
+data storage of recieved/sent messages. We haven't started collecting quantitative results or writing 
+the report so we're still a little behind schedule but trying to catch up with the time we have left.
 
 (2) Each team member's contribution:
 
-Michael Alvarez:
+Michael Alvarez: I met with the rest of the team last Tuesday and Today as we worked through more live 
+testing. Together we diagnosed issues and fixed them as we achieved more and more functionality. 
+Specifically, I worked heavily with Ben on debgugging the connection and socket code that allows for messages
+to be sent between the devices running the app. The biggest issues being caused by hardware incompatability
+and discovering peer devices IP addresses after the Wifi-Direct Group has been initialized. I'm also starting 
+to prepare for how we can run experiments to test the performance of our application.
 
 Ben Breisch:
 
