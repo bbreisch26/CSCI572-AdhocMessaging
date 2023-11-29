@@ -52,7 +52,7 @@ class MyWifiP2PApp {
     var peerIPAddress: String? = ""
     var p2pinfo: WifiP2pInfo? = null
     // List of peer devices
-    var peerList = mutableStateOf<WifiP2pDeviceList>(WifiP2pDeviceList())
+    var peerList = mutableStateOf(WifiP2pDeviceList())
 
     // Map of (MAC address, device name) items
     var servicePeerList = mutableStateMapOf<String, String>()
