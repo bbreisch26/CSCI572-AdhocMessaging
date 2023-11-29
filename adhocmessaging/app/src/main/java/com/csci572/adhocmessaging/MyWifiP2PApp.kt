@@ -258,8 +258,8 @@ class MyWifiP2PApp {
         })
         serverSocketTask?.cancel(true)
         serverSocket?.close()
-
         manager?.stopPeerDiscovery(channel, null)
+        manager?.clearServiceRequests(channel, null)
     }
 
     private fun initiateServerSocket() {
