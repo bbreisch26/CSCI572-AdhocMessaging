@@ -153,8 +153,8 @@ class MyWifiP2PApp {
     private fun registerService(userName: String) {
         //  Create a string map containing information about your service.
         val record: Map<String, String> = mapOf(
-            "listenport" to serverPort.toString(),
-            "buddyname" to userName,
+            "listenPort" to serverPort.toString(),
+            "deviceName" to userName,
             "available" to "visible"
         )
 
@@ -190,8 +190,8 @@ class MyWifiP2PApp {
          */
         val txtListener = WifiP2pManager.DnsSdTxtRecordListener { fullDomain, record, device ->
             Log.v("MainActivity", "DnsSdTxtRecord available -$record")
-            device.status
-            record["buddyname"]?.also {
+
+            record["deviceName"]?.also {
                 servicePeerList[device.deviceAddress] = it
             }
 
@@ -213,7 +213,7 @@ class MyWifiP2PApp {
                 //                notifyDataSetChanged()
                 //            }
 
-                Log.v("MainActivity", "onBonjourServiceAvailable $instanceName")
+                Log.v("MainActivity", "onBonjourServiceAvailable $instanceName : $registrationType : $resourceType")
             }
 
         manager?.setDnsSdResponseListeners(channel, servListener, txtListener)

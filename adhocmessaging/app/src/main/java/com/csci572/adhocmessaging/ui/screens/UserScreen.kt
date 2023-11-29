@@ -31,7 +31,7 @@ fun UserScreen(navController: NavController, activity: MainActivity, userName: S
         activity.p2papp!!.setup(activity.applicationContext, userName)
     }
 
-    val servicePeerList = remember { activity.p2papp!!.servicePeerList }
+    val peerList = remember { activity.p2papp!!.peerList }
 
     Scaffold(
         topBar = {
@@ -43,10 +43,13 @@ fun UserScreen(navController: NavController, activity: MainActivity, userName: S
         Column(modifier = Modifier
             .padding(innerPadding)) {
 
-            servicePeerList.forEach {
-                UserCard(navController, User(it.value, it.key), activity.p2papp!!)
+            peerList?.deviceList?.forEach {
+                val mac = it.deviceAddress
+                if (activity.p2papp!!.servicePeerList.containsKey(mac)) {
+                    val peerName = activity.p2papp!!.servicePeerList[mac]
+                    UserCard(navController, User(peerName!!, mac), activity.p2papp!!)
+                }
             }
-//            UserCard(navController, User("beep", "boop"), activity.p2papp!!)
         }
     }
 }
