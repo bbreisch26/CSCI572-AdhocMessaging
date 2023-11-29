@@ -46,8 +46,6 @@ class WiFiDirectBroadcastReceiver(
                     // Perform action with peers
                     // May not be applicable now that we are using service discovery
                     p2papp.peerList.value = peers
-
-                    Log.v("peerlist", p2papp.peerList.value.toString())
                 })
             }
             WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION -> {
