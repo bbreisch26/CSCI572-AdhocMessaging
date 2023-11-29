@@ -16,6 +16,8 @@ import android.os.Build
 import android.os.Environment
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.toMutableStateList
 import androidx.core.content.ContextCompat
@@ -49,9 +51,8 @@ class MyWifiP2PApp {
     private val serverPort = 8888
     var peerIPAddress: String? = ""
     var p2pinfo: WifiP2pInfo? = null
-
     // List of peer devices
-    var peerList: WifiP2pDeviceList? = null
+    var peerList = mutableStateOf<WifiP2pDeviceList>(WifiP2pDeviceList())
 
     // Map of (MAC address, device name) items
     var servicePeerList = mutableStateMapOf<String, String>()

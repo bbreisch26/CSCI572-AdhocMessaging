@@ -43,7 +43,7 @@ fun UserScreen(navController: NavController, activity: MainActivity, userName: S
         Column(modifier = Modifier
             .padding(innerPadding)) {
 
-            peerList?.deviceList?.forEach {
+            peerList.value.deviceList?.forEach {
                 val mac = it.deviceAddress
                 if (activity.p2papp!!.servicePeerList.containsKey(mac)) {
                     val peerName = activity.p2papp!!.servicePeerList[mac]

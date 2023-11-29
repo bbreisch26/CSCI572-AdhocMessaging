@@ -76,6 +76,8 @@ class MainActivity : ComponentActivity() {
         p2papp?.onDestroy()
 
     }
+    /*
+    // DO NOT UNCOMMENT
 
     /* register the broadcast receiver with the intent values to be matched */
     override fun onResume() {
@@ -97,6 +99,7 @@ class MainActivity : ComponentActivity() {
         }
 
     }
+    */
 }
 
 
