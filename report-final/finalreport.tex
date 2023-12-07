@@ -7,9 +7,9 @@
 
 \pagestyle{plain}
 
-\title{{\normalsize CSCI 572: Computer Networks (Fall 2023)}\\Proposal: Ad-Hoc Messaging App}
+\title{{\normalsize CSCI 572: Computer Networks (Fall 2023)}\\Final Project: Ad-Hoc Messaging App}
 \author{Michael Alvarez, Luke Beukelman, Ben Breisch}
-\date{October 9th 2023}
+\date{December 8th 2023}
 
 \begin{document}
 
@@ -26,7 +26,7 @@ If someone wants to send a message to a friend nearby, the message must travel m
         Networking      & Connections between two devices shall use Wi-Fi Direct using the Android Wi-Fi P2P API                          \\ \hline
         Networking      & Devices shall provide routing of messages between source and destination nodes using a to-be-determined routing protocol. \\ \hline
         Networking      & Devices shall provide acknowledgements when messages are received in order to ensure message delivery           \\ \hline
-        User Experience & Users shall be able to send text and file messages                                                              \\ \hline
+        User Experiendce & Users shall be able to send text and file messages                                                              \\ \hline
         User Experience & Latency shall be minimized as much as possible when sending messages (ideally within 1 second)                  \\ \hline
         User Experience & Devices shall save messages offline such that they can be viewed later                                          \\ \hline
         User Experience & Devices shall show a contact list of other nearby users that a user can start a conversation with               \\ \hline
@@ -108,17 +108,43 @@ used wireless mesh networking for peer to peer messaging over bluetooth or WiFi.
 \section{Approach} %(optional)
 %    \item Rationale: Why is it a good idea?
 %     \item Sketch of your approach and design.
-Mobile app development, especially for Android, has an extremely wide range of resources on the Internet. The Android platform is well supported by the community and we plan to leverage online resources for the development of this app. Android provides an existing Wi-Fi Direct library that we will leverage to speed up development. We will develop this app using Android's Studio Software Development Kit in Java. For our mobile app to function properly, we will need mock ups of different pages and screens. In the User Interface / User Experience (UI/UX) industry, these are called wireframes. We have created three wireframes, each showing the sign-in page, nearby users, and the messaging page of the application respectively. The wireframes were created in a free tool called WonderShare and are shown in the image below. These wireframes will guide development of the user interface.\\
+Mobile app development, especially for Android, has an extremely wide range of resources on the Internet. The Android platform is well supported by the community and we plan to leverage many online resources for the development of this app. Android provides an existing Wi-Fi Direct library that we use to speed up development. This app was developed using Android's Studio Software Development Kit in Kotlin. For our mobile app to function properly, we used mock-ups of different pages and screens. In the User Interface / User Experience (UI/UX) field, these are called wireframes. We created three wireframes, each showing the sign-in page, nearby users, and the messaging page of the application respectively. The wireframes were created in a free tool called WonderShare and are shown in the image below. These wireframes will guide development of the user interface.\\
 \begin{center}
     \includegraphics[scale=0.5]{wireframe.png} \\
 \end{center}
-Behind the scenes, this application will use a complex set of functions and internal storage structures. Devices may periodically broadcast beacon frames with routing information, tagged with usernames for each device. A possible technique could essentially be a fusion of AODV and DSDV routing. When the app is open on a device, it will listen for these beacon frames and update its routing table accordingly. If a device receives a frame destined for a different host, it will look up the host in its routing table and determine if it is reachable, forwarding the packet along if it is. When a frame is received at the destination host, it will detect errors with a checksum or CRC32 and reply with an ACK. Messages will likely be limited to 1024 characters in order to cut down on network latency and reduce packet loss. Conversations between users will be stored on the device.
+Behind the scenes, this application uses a complex set of functions and internal storage structures. Devices  periodically broadcast beacon frames with routing information, tagged with usernames for each device. When the app is open on a device, it will listen for these beacon frames and update its list of nearby users accordingly. When a message is sent to a peer device, we use TCP for the best reliability. Conversations between users are stored on the device.
 
-\section{Evaluation Plan}
+\section{Implementation}
+As stated earlier in this report, the Ad-Hoc Messaging app was implemented in Kotlin using Android Studio. During development, we discovered that our app requires certain permissions to be given by the device owner. In order to ensure the proper permissions were granted, we added a fourth screen to the UI layout. This permission screen is shown to the user on startup if the app is lacking any permissions. This aids in development as a sanity check that any issues we run into are not permission-related.
+\subsection{Front-End}
+The front end was developed using the composable model, reusable units of code that compile into visual elements.
+There are four separate screens on the app. 
+\subsubsection{Permission Screen}
+The permission screen is shown at the end of this section. This screen is fairly simple. It shows a message that lets the user know that the app is missing the correct permissions. At the bottom of the page, there is a button that users can click on to be taken to the Android OS permission screen for the app. All users need to do is allow the correct permissions and go back to the app in order to be taken to the sign-in screen.
+\subsubsection{Sign-In Screen}
+The sign-in screen is shown at the end of this section. Users are presented with the AI-generated logo for this app as well as a text-box to input their desired username. After entering a username, the user can click the sign-in button in order to kick off the back-end processes to start broadcasting frames and looking for other devices nearby.
+\subsubsection{User Screen}
+After a user clicks the sign-in button on the sign-in screen, many of the backend services are started. Once the back-end processes discover a nearby device running the app, the process adds the discovered device to the UI. The user can select the device in order to initiate a Wi-Fi Direct connection and transition to the chat screen.
+\subsubsection{Chat Screen}
+Opening the chat screen for a discovered device requires the Wi-Fi Direct connection to be opened and error-free. Users are presented with the local chat history, pulled from the MongoDB database. Users can type and send new messages at any time while inside the chat screen. If a message is successfully sent, the contents will populate as a sent message in the UI. If the message does not successfully send, the user is notified and not added to the database.
+\subsection{Back-End}
+\subsubsection{Service Advertisement}
+\subsubsection{Connection Protocol}
+\subsubsection{Message Storage}
+
+\subsection{Multihop}
+While our initial proposal set out requirements for multi-hop routing and creating a mesh network, we determined early on that this is not feasible. Because we are restricted to using Android's Wi-Fi Direct API, it would not make sense to do multi-hop routing using Wi-Fi Direct. We found that the association latency to connect between clients is much too slow in order to accommodate any kind of mesh networking.
+
+
+
+\section{Performance Evaluation}
 %      \item What experiments are you going to run?
 \subsection{Scenarios}
 
-We plan to do all of our evaluation and experimentation on live devices. One of our team members has an android device and we are currently investigating how to emulate more android devices or acquire dummy devices for experimentation. To gain a full picture of our application's performance we plan to test it in the following scenarios:
+We performed all of our evaluation and experimentation on live android smart phones. One of our team members had a spare Wi-Fi Direct compatible android phone and we acquired one more 
+
+
+One of our team members has an android device and we are currently investigating how to emulate more android devices or acquire dummy devices for experimentation. To gain a full picture of our application's performance we plan to test it in the following scenarios:
 
 \begin{itemize}
     \item Single-hop communication
@@ -169,21 +195,9 @@ Scalability is the next concern. If users can't send or receive messages in a cr
 Since our app sends messages locally to a destination, rather than traveling through a complex network of infrastructure nodes, users will expect it to be very quick. Therefore, low latency is also a requirement. Nobody likes to wait for something as simple as a message to send. Especially when some conversations are time sensitive. So the text messages themselves should send very quickly, with a small wait required for larger files.
 Finally, messages need to be delivered. When a user sends a message they expect it to actually reach the destination. If that promise isn't upheld then that can cause confusion and frustration amongst users. If the destination is unreachable then the sending user needs to be alerted of this. This is a potential problem for our app as users could be hopping on and off the app at a rapid pace.
 
-\section{Milestones} %(with dates)
-The table below describes the milestones and associated due dates for each.
-\begin{center}
-    \begin{tabular}{ |c|c|c| }
-        \hline
-        Milestone                  & Explanation  \\ \hline
-        Install Development Tools  & Oct 14, 2023 \\
-        Initial Implementation     & Oct 21, 2023 \\
-        Begin Final Report Writing & Nov 1, 2023  \\
-        Finish App Implementation  & Nov 15,2023  \\
-        Final Report Due           & Nov 22, 2023 \\
-        \hline
-    \end{tabular}
-\end{center}
+\subsection{Results}
 
+\section{Conclusion}
 
 \bibliographystyle{acm}
 \bibliography{refs}{}
