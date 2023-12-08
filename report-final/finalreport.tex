@@ -175,10 +175,15 @@ Opening the chat screen for a discovered device requires the Wi-Fi Direct connec
 \end{figure}
 
 \subsection{Back-End}
+
 The back-end of this app is made up of many different services. These are required to run in separate threads according to the Android API guidelines. The app is built around these services, requiring callbacks and asynchronous functions for much of the code. This increased the complexity of the code and lengthened development time.
+
 \subsubsection{Service Advertisement}
+
 After the user logs in, the app must broadcast that the device is ready for new connections. In order to do this, the Android Wi-Fi Direct API uses Domain Name Service - Service Discovery (DNS-SD). DNS-SD is an established protocol that allows for zero-configuration wide area service discovery. Other devices that have the app open listen for these DNS-SD broadcasts, and update their list of available devices accordingly. This requires a separate thread running on the device in order to check for updates in the background.
+
 \subsubsection{Connection Protocol}
+
 When a Wi-Fi Direct connection is initiated by a device, the other device is prompted with a system-level modal pop-up asking for permission to connect. When permission is allowed, both devices are connected in what Android's API calls a group. The initiating device is now the group owner, with a fixed IP address of 192.168.49.1. The other device is a group member, with a randomized last octet of the IP address, 192.168.49.1 - 192.168.49.255. This presents an issue for the group owner, who does not know the IP address of the other device. In order to fix that, when a device accepts an incoming Wi-Fi Direct connection, it will immediately send a HELLO message to the group owner, accompanied by the device's IP address. This HELLO message ensures both devices have each other's IP address. With addresses shared, devices are free to now send messages with each other. Figure \ref{backend:proto} below shows the connection process.
 
 \begin{figure}[h]
@@ -189,7 +194,9 @@ When a Wi-Fi Direct connection is initiated by a device, the other device is pro
 \end{figure}
 
 \subsubsection{Message Storage}
+
 When messages are sent and received, they must be stored locally somewhere. In order to achieve this, the app uses a local SQLite database. Rather than actually implement our own SQLite database and objects in the program, we use Android's Room API which already implements SQLite. The app stores the content of the message, the timestamp of when it was sent/received, and the username of the user. It also stores whether the message was sent from the device, used for drawing the chat screen correctly. Table \ref{backend:sqlite} below shows the database schema used. 
+
 \begin{table}[h]
     \begin{center}
     \begin{tabular}{|c|c|} \hline
@@ -206,6 +213,7 @@ When messages are sent and received, they must be stored locally somewhere. In o
 
 
 \subsection{Multi-Hop}
+
 While our initial proposal set out requirements for multi-hop routing and creating a mesh network, we determined early on that this is not feasible. Because we are restricted to using Android's Wi-Fi Direct API, it would not make sense to do multi-hop routing using Wi-Fi Direct. We found that the association latency between clients is much too slow in order to accommodate any kind of mesh networking. For this reason, combined with the limited time horizon of the project, we decided not to pursue mesh networking using Wi-Fi Direct. We were also limited by access to only two Android phones that would have made testing a mesh Wi-Fi Direct network very challenging.
 
 \section{Performance Evaluation}
@@ -229,10 +237,12 @@ The single-hop communication experiments were performed with the two android dev
 \subsection{Metrics}
 
 For each experiment we have recorded the following metrics:
+
 \begin{itemize}
     \item Throughput
     \item Latency
 \end{itemize}
+
 The throughput in this case is simply the data transmission rate between the two devices. So, all of the messages sent and received over a time time period measured in bits per second. The latency here depends on the situation, but in terms of messages it simply means the delay from when a message is sent on one device to when it is completely received on the other. We had originally hoped to decompose the latency into different components such as route acquisition, processing, potential queuing, transmission, propagation, re-transmission, and etc but all of those details are abstracted away in our implementation as the API handles it and functions as a black box.
 
 \subsection{Criteria}
@@ -242,6 +252,7 @@ There are two key results we were looking for when performing these experiments.
 The criteria for our first result is fairly straightforward. We simply compared our recorded metrics directly against cellular messaging on our phones. On the other hand, the criteria for our second result was much less straightforward. There is no benchmark for the minimum performance required on a messaging app. So we evaluated the app against our own defined criteria of what is needed for a "good user experience".
 
 These soft criteria are as follows:
+
 \begin{itemize}
     \item Able to handle constant activity, fast paced messaging between users.
     \item Low latency
@@ -251,6 +262,7 @@ These soft criteria are as follows:
           \end{itemize}
     \item Reliable delivery, data gets delivered unless destination is unreachable.
 \end{itemize}
+
 These are the basic requirements for any messaging app to be useful. If any one of these are missing then the user experience is miserable.
 A messaging app needs to keep up with even the fastest typing user. We can put a character limit to restrict total message size, but that wouldn't stop a user from sending many large messages in quick succession. Therefore, it is important that the app can handle such usage. One speedy user shouldn't be able to cause network delay. We were able to manually test this ourselves by sending out messages as fast as possible and seeing if we observed an increase in network latency.
 
