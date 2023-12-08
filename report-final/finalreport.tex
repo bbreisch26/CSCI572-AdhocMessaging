@@ -33,7 +33,7 @@ In an increasingly connected (and congested) world - why bother wasting bandwidt
         \\ \hline
         Networking      & Ack           & Devices shall provide acknowledgements when messages are received in order to ensure message delivery
         \\ \hline
-        User Experience & Contents      & Users shall be able to send text and file message
+        User Experience & Contents      & Users shall be able to send text and file messages
         \\ \hline
         User Experience & Latency       & Latency shall be minimized as much as possible when sending messages (ideally within 1 second)
         \\ \hline
@@ -126,14 +126,14 @@ The paper also discusses applications of WiFi direct, including file transfer an
 
 Mobile app development, especially for Android, has an extremely wide range of resources on the Internet. The Android platform is well supported by the community and we plan to leverage many online resources for the development of this app. Android provides an existing Wi-Fi Direct library that we use to speed up development.
 
-This app was developed using Android Studio's Software Development Kit in Kotlin. For our mobile app to function properly, we used mock-ups of different pages and screens. In the User Interface / User Experience (UI/UX) field, these are called wireframes. We created three wireframes, each showing the sign-in page, nearby users, and the messaging page of the application respectively. The wireframes were created in a free tool called WonderShare and are shown in the image below. These wireframes will guide development of the user interface.
+This app was developed using Android Studio's Software Development Kit in Kotlin. For our mobile app to function properly, we used mock-ups of different pages and screens. In the User Interface / User Experience (UI/UX) field, these are called wireframes. We created three wireframes, each showing the sign-in page, nearby users, and the messaging page of the application respectively. The wireframes were created in a free tool called WonderShare and are shown in the image below. These wireframes guided development of the user interface.
 
 
 \begin{center}
     \includegraphics[scale=0.5]{wireframe.png} \\
 \end{center}
 
-Behind the scenes, this application uses a complex set of functions and internal storage structures. Devices  periodically broadcast beacon frames with routing information, tagged with usernames for each device. When the app is open on a device, it will listen for these beacon frames and update its list of nearby users accordingly. When a message is sent to a peer device, we use TCP for the best reliability. Conversations between users are stored on the device.
+Behind the scenes, this application uses a complex set of functions and internal storage structures. Devices  periodically broadcast beacon frames with routing information, tagged with usernames for each device. When the app is open on a device, it listens for these beacon frames and update its list of nearby users accordingly. When a message is sent to a peer device, we use TCP for the best reliability. Conversations between users are stored on the device.
 
 \section{Implementation}
 
@@ -154,7 +154,7 @@ The sign-in screen is shown in Figure \ref{frontend:screens} at the end of this 
 After a user clicks the sign-in button on the sign-in screen, many of the backend services are started. Once the back-end processes discover a nearby device running the app, the process adds the discovered device to the UI. The user can select the device in order to initiate a Wi-Fi Direct connection and transition to the chat screen.
 
 \subsubsection{Chat Screen}
-Opening the chat screen for a discovered device requires the Wi-Fi Direct connection to be open and error-free. Users are presented with the local chat history, pulled from the MongoDB database. Users can type and send new messages at any time while inside the chat screen. If a message is successfully sent, the contents will populate as a sent message in the UI. If the message does not successfully send, the user is notified and not added to the database.
+Opening the chat screen for a discovered device requires the Wi-Fi Direct connection to be open and error-free. Users are presented with the local chat history, pulled from the SQLite database. Users can type and send new messages at any time while inside the chat screen. If a message is successfully sent, the contents will populate as a sent message in the UI. If the message does not successfully send, the user is notified and not added to the database.
 
 \begin{figure}[h]
     \centering
@@ -235,7 +235,7 @@ The throughput in this case is simply the data transmission rate between the two
 
 There are two key results we were looking for when performing these experiments. The first was to compare our app to other existing solutions. Specifically, we wanted to see if our approach of using WiFi-Direct performed better or worse than cellular messaging which is widely accepted and used. The second result is to discern if our solution meets the user's needs. Does it have the necessary throughput, latency, and reliability to provide a good experience for the casual user? That result tells us whether or not our solution is usable and functional.
 
-The criteria for our first result is fairly straightforward. We simply compared our recorded metrics directly against cellular messaging on our phones. Generally speaking we found that cellular messaging has a latency of 1 second in ideal condition but could be much longer depending on location. On the other hand, the criteria for our second result was much less straightforward. There is no benchmark for the minimum performance required on a messaging app. So we evaluated the app against our own defined criteria of what is needed for a "good user experience".
+The criteria for our first result is fairly straightforward. We simply compared our recorded metrics directly against cellular messaging on our phones. Generally speaking we found that cellular messaging has a latency of 1 second in ideal conditions but could be much longer depending on location. On the other hand, the criteria for our second result was much less straightforward. There is no benchmark for the minimum performance required on a messaging app. So we evaluated the app against our own defined criteria of what is needed for a "good user experience".
 
 Therefore our evaluation criteria are as follows:
 \begin{itemize}
@@ -253,11 +253,11 @@ A messaging app needs to keep up with even the fastest typing user. We can put a
 
 Since our app sends messages locally to a destination, rather than traveling through a complex network of infrastructure nodes, users will expect it to be very quick. Therefore, low latency is also a requirement. Specifically we hope to make it faster than even cellular under ideal conditions. Nobody likes to wait for something as simple as a message to send. Especially when some conversations are time sensitive. So the text messages themselves should send very quickly, with a small wait required for larger files.
 
-Finally, messages need to be delivered. When a user sends a message they expect it to actually reach the destination. If that promise isn't upheld then that can cause confusion and frustration amongst users. If the destination is unreachable then the sending user needs to be alerted of this. This is a potential problem for our app as users could be hopping on and off the app at a rapid pace.
+Finally, messages need to be delivered. When a user sends a message they expect it to actually reach the destination. If that promise isn't upheld, then that can cause confusion and frustration amongst users. If the destination is unreachable then the sending user needs to be alerted of this. This is a potential problem for our app as users could be hopping on and off the app at a rapid pace.
 
 \subsection{Results}
 
-To gather results we loaded our app onto the two Wi-Fi Direct capable android phones. We kept one of the phones hooked up to a laptop so we could collect its recorded logs for exact timing information. Then we proceeded to run each of the following experiments 10 times and average the outcomes. The first experiment shown in Figure \ref{results:message_latency} is the average latency of small and large messages during high pace usage of a single-hop connection between two phones. We decided to combine all of these scenarios to simulate what a real conversation between two users would be like in a worst case scenario. Both users would be sending both small text messages and also larger messages (we used up to 5 KB) while doing so at a high speed.
+To gather results, we loaded our app onto the two Wi-Fi Direct capable android phones. We kept one of the phones hooked up to a laptop so we could collect its recorded logs for exact timing information. Then we proceeded to run each of the following experiments 10 times and average the outcomes. The first experiment shown in Figure \ref{results:message_latency} is the average latency of small and large messages during high pace usage of a single-hop connection between two phones. We decided to combine all of these scenarios to simulate what a real conversation between two users would be like in a worst case scenario. Both users would be sending both small text messages and also larger messages (to emulate file transfer - we used a 5KB text block) while doing so at a high speed.
 
 \begin{figure}[h!]
     \centering
