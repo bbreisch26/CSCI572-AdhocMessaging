@@ -16,10 +16,6 @@
 
 \maketitle
 
-\tableofcontents
-
-\newpage
-
 \section{Introduction}
 
 If someone wants to send a message to a friend nearby, the message must travel much farther than the distance between devices. Messages sent through SMS or Apple's iMessage must travel from the originating device through a series of intermediate infrastructure nodes before reaching the destination device. This causes increased latency and unnecessary network overhead.
@@ -143,9 +139,7 @@ Behind the scenes, this application uses a complex set of functions and internal
 As stated earlier in this report, the Ad-Hoc Messaging app was implemented in Kotlin using Android Studio. During development, we discovered that our app requires certain permissions to be given by the device owner. In order to ensure the proper permissions were granted, we added a fourth screen to the UI layout. This permission screen is shown to the user on startup if the app is lacking any permissions. This aids in development as a sanity check that any issues we run into are not permission-related.
 
 \subsection{Front-End}
-
-The front end was developed using Jetpack Compose, a built-in for Android Studio. Jetpack Compose is built around Composables, reusable units of code that compile into visual elements.
-
+The front end was developed using Jetpack Compose, a built-in framework for Android Studio. Jetpack Compose is built around Composables, reusable units of code that compile into visual elements. The app uses about a dozen different composables, each written by us for UI elements such as buttons or text fields. Each screen in the app is a composable as well.
 There are four separate screens on the app. 
 
 \subsubsection{Permission Screen}
@@ -153,30 +147,27 @@ There are four separate screens on the app.
 The permission screen is shown in Figure \ref{frontend:screens} at the end of this section. This screen is fairly simple. It shows a message that lets the user know that the app is missing the correct permissions. At the bottom of the page, there is a button that users can click on to be taken to the Android OS permission settings for the app. All users need to do is allow the correct permissions and go back to the app in order to be taken to the sign-in screen. This prevents users (and developers) from using the app without the proper permissions - which would cause errors and a bad user experience.
 
 \subsubsection{Sign-In Screen}
-
-The sign-in screen is shown at the end of this section. Users are presented with the AI-generated logo for this app as well as a text-box to input their desired username. After entering a username, the user can click the sign-in button in order to kick off the back-end processes to start broadcasting frames and looking for other devices nearby.
-
+The sign-in screen is shown in Figure \ref{frontend:screens} at the end of this section. Users are presented with the AI-generated logo for this app as well as a text-box to input their desired username. After entering a username, the user can click the sign-in button in order to kick off the back-end processes to start broadcasting frames and looking for other devices nearby.
 \subsubsection{User Screen}
 
 After a user clicks the sign-in button on the sign-in screen, many of the backend services are started. Once the back-end processes discover a nearby device running the app, the process adds the discovered device to the UI. The user can select the device in order to initiate a Wi-Fi Direct connection and transition to the chat screen.
 
 \subsubsection{Chat Screen}
-
-Opening the chat screen for a discovered device requires the Wi-Fi Direct connection to be opened and error-free. Users are presented with the local chat history, pulled from the MongoDB database. Users can type and send new messages at any time while inside the chat screen. If a message is successfully sent, the contents will populate as a sent message in the UI. If the message does not successfully send, the user is notified and not added to the database.
+Opening the chat screen for a discovered device requires the Wi-Fi Direct connection to be open and error-free. Users are presented with the local chat history, pulled from the MongoDB database. Users can type and send new messages at any time while inside the chat screen. If a message is successfully sent, the contents will populate as a sent message in the UI. If the message does not successfully send, the user is notified and not added to the database.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=6.5in]{screens.png}
-    \caption{App Screens (Dark Mode)}
+    \caption{Permission, Sign-In, User, Chat Screens (Dark Mode)}
     \label{frontend:screens}
 \end{figure}
 
 \subsection{Back-End}
-The back-end of this app is made up of many different services. These are required to run in separate threads according to the Android API guidelines. The app is built around these services, requiring callbacks and asynchronous functions for much of the code. This increased the complexity of the code and lengthened development time.
+The back-end of this app is made up of many different services. These are required to run in separate threads by the Android API guidelines. The app is built around these services, requiring callbacks and asynchronous functions for much of the code. This increased the complexity of the code and lengthened development time.
 \subsubsection{Service Advertisement}
 After the user logs in, the app must broadcast that the device is ready for new connections. In order to do this, the Android Wi-Fi Direct API uses Domain Name Service - Service Discovery (DNS-SD). DNS-SD is an established protocol that allows for zero-configuration wide area service discovery. Other devices that have the app open listen for these DNS-SD broadcasts, and update their list of available devices accordingly. This requires a separate thread running on the device in order to check for updates in the background.
 \subsubsection{Connection Protocol}
-When a Wi-Fi Direct connection is initiated by a device, the other device is prompted with a system-level modal pop-up asking for permission to connect. When permission is allowed, both devices are connected in what Android's API calls a group. The initiating device is now the group owner, with a fixed IP address of 192.168.49.1. The other device is a group member, with a randomized last octet of the IP address, 192.168.49.1 - 192.168.49.255. This presents an issue for the group owner, who does not know the IP address of the other device. In order to fix that, when a device accepts an incoming Wi-Fi Direct connection, it will immediately send a HELLO message to the group owner, accompanied by the device's IP address. This HELLO message ensures both devices have each other's IP address. With addresses shared, devices are free to now send messages with each other. Figure \ref{backend:proto} below shows the connection process.
+When a Wi-Fi Direct connection is initiated by a device, the other device is prompted with a system-level modal pop-up asking for permission to connect. When permission is allowed, both devices are connected in what Android's API calls a group. The initiating device is now the group owner, with a fixed IP address of 192.168.49.1. The other device is a group member, with a randomized last octet of the IP address, 192.168.49.1 - 192.168.49.255. This presents an issue for the group owner, who does not know the IP address of the other device. In order to fix that, when a device accepts an incoming Wi-Fi Direct connection, it will immediately send a HELLO message to the group owner, accompanied by the device's IP address. This HELLO message ensures both devices have each other's IP address. With addresses shared, devices are free to now send messages with each other over TCP, which is relatively trivial. Because we use TCP, we can ensure messages are delivered or the device is notified that the message was lost in transmission. Figure \ref{backend:proto} below shows the connection process.
 
 \begin{figure}[h]
     \centering
@@ -236,9 +227,9 @@ The throughput in this case is simply the data transmission rate between the two
 
 There are two key results we were looking for when performing these experiments. The first was to compare our app to other existing solutions. Specifically, we wanted to see if our approach of using WiFi-Direct performed better or worse than cellular messaging which is widely accepted and used. The second result is to discern if our solution meets the user's needs. Does it have the necessary throughput, latency, and reliability to provide a good experience for the casual user? That result tells us whether or not our solution is usable and functional.
 
-The criteria for our first result is fairly straightforward. We simply compared our recorded metrics directly against cellular messaging on our phones. On the other hand, the criteria for our second result was much less straightforward. There is no benchmark for the minimum performance required on a messaging app. So we evaluated the app against our own defined criteria of what is needed for a "good user experience".
+The criteria for our first result is fairly straightforward. We simply compared our recorded metrics directly against cellular messaging on our phones. Generally speaking we found that cellular messaging has a latency of 1 second in ideal condition but could be much longer depending on location. On the other hand, the criteria for our second result was much less straightforward. There is no benchmark for the minimum performance required on a messaging app. So we evaluated the app against our own defined criteria of what is needed for a "good user experience".
 
-These soft criteria are as follows:
+Therefore our evaluation criteria are as follows:
 \begin{itemize}
     \item Able to handle constant activity, fast paced messaging between users.
     \item Low latency
@@ -251,36 +242,36 @@ These soft criteria are as follows:
 These are the basic requirements for any messaging app to be useful. If any one of these are missing then the user experience is miserable.
 A messaging app needs to keep up with even the fastest typing user. We can put a character limit to restrict total message size, but that wouldn't stop a user from sending many large messages in quick succession. Therefore, it is important that the app can handle such usage. One speedy user shouldn't be able to cause network delay. We were able to manually test this ourselves by sending out messages as fast as possible and seeing if we observed an increase in network latency.
 
-Since our app sends messages locally to a destination, rather than traveling through a complex network of infrastructure nodes, users will expect it to be very quick. Therefore, low latency is also a requirement. Nobody likes to wait for something as simple as a message to send. Especially when some conversations are time sensitive. So the text messages themselves should send very quickly, with a small wait required for larger files.
+Since our app sends messages locally to a destination, rather than traveling through a complex network of infrastructure nodes, users will expect it to be very quick. Therefore, low latency is also a requirement. Specifically we hope to make it faster than even cellular under ideal conditions. Nobody likes to wait for something as simple as a message to send. Especially when some conversations are time sensitive. So the text messages themselves should send very quickly, with a small wait required for larger files.
 
 Finally, messages need to be delivered. When a user sends a message they expect it to actually reach the destination. If that promise isn't upheld then that can cause confusion and frustration amongst users. If the destination is unreachable then the sending user needs to be alerted of this. This is a potential problem for our app as users could be hopping on and off the app at a rapid pace.
 
 \subsection{Results}
 
-To gather results we loaded our app onto the two Wi-Fi Direct capable android phones. We kept one of the phones hooked up to a laptop so we could collect its recorded logs for exact timing information. Then we proceeded to run each of the following experiments 10 times and average the outcomes. That is what has been graphed in the following figures.
+To gather results we loaded our app onto the two Wi-Fi Direct capable android phones. We kept one of the phones hooked up to a laptop so we could collect its recorded logs for exact timing information. Then we proceeded to run each of the following experiments 10 times and average the outcomes. The first experiment shown in Figure \ref{results:message_latency} is the average latency of small and large messages during high pace usage of a single-hop connection between two phones. We decided to combine all of these scenarios to simulate what a real conversation between two users would be like in a worst case scenario. Both users would be sending both small text messages and also larger messages (we used up to 5 KB) while doing so at a high speed.
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=4in]{message_latency_graph.png}
-    \caption{Message latency in milliseconds over varying distance in meters}
+    \caption{Experiment 1: Message latency in milliseconds over varying distance in meters}
     \label{results:message_latency}
 \end{figure}
 
-Figure \ref{results:message_latency} shows the one-way latency of sending a message over a single-hop using our application. There are two important results from this figure. The first is that distance significantly impacts latency. We can see that within 5 meters of distance the latency is below 100 ms or 0.1 seconds. This is extremely quick and basically instantaneous to the user. However, when we tested at a higher distance of 10 meters the latency immediately skyrocketed to a little over 900 ms or 0.9 seconds. This really emphasizes that Wi-Fi Direct is meant for local communication. The second result is that despite being sensitive to distance, this application is still extremely quick. Even our worst latency measurement is still below a second. It is also important to note that these latency measurements were collected from sending both short text messages and also larger amounts of data up to 5 KB. When testing, we observed that the size of the message contents didn't significantly impact latency. Which tells us that most of our latency isn't from transmission but actually is with connecting the network sockets.
+Figure \ref{results:message_latency} shows the results of this experiment. There are two important results from this figure. The first is that distance significantly impacts latency. We can see that within 5 meters of distance the latency is below 100 ms or 0.1 seconds. This is extremely quick and basically instantaneous to the user. However, when we tested at a higher distance of 10 meters the latency immediately skyrocketed to a little over 900 ms or 0.9 seconds. This really emphasizes that Wi-Fi Direct is meant for local communication. The second result is that despite being sensitive to distance, this application is still extremely quick. Even our worst latency measurement is still below a second. Which means that our application successfully meets our criteria for fast-paced usage and also latency of less than one second for text messages.
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=4in]{new_user_dicovery_graph.png}
-    \caption{New user discovery latency in seconds over varying distance in meters}
+    \caption{Experiment 2: New user discovery latency in seconds over varying distance in meters}
     \label{results:new_user}
 \end{figure}
 
-Figure \ref{results:new_user} shows the latency from when a new device login occurs to when the other devices discover the new device. In the context of our application this represents the delay that a user has to endure after opening the app until other users notice that they are available to message with. This was tested by having one android device completely logged in and listening for peer devices running the app then starting the app on the other phone and recording the delay till the first phone notices the second one. As seen in the figure this metric has an interesting relationship with distance. The fastest new user discovery occurs when the devices are separated by 5 meters and it increases with any change with distance from that point. As mentioned in our implementation section the user discovery relies on service advertisements being sent out from each device running the app. When the devices are too close it seems to present some interference or something similar which delays user discovery.
+Figure \ref{results:new_user} shows the latency from when a new device login occurs to when the other devices discover the new device. In the context of our application this represents the delay that a user has to endure after opening the app until other users notice that they are available to message with. This was tested by having one android device completely logged in and listening for peer devices running the app then starting the app on the other phone and recording the delay till the first phone notices the second one. As seen in the figure this metric has an interesting relationship with distance. The fastest new user discovery occurs when the devices are separated by 5 meters and it increases with any change with distance from that point. As mentioned in our implementation section the user discovery relies on service advertisements being sent out from each device running the app. When the devices are too close there seems to be some interference or something similar which delays user discovery.
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=4in]{dropping_user_latency_graph.png}
-    \caption{Dropping user latency in seconds over varying distance in meters}
+    \caption{Experiment 3: Dropping user latency in seconds over varying distance in meters}
     \label{results:dropping_user}
 \end{figure}
 
@@ -289,32 +280,42 @@ Figure \ref{results:dropping_user} shows the latency between when a user closes 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=4in]{throughput_graph.png}
-    \caption{Network throughput in kbps over varying distance in meters}
+    \caption{Experiment 4: Network throughput in kbps over varying distance in meters}
     \label{results:throughput}
 \end{figure}
 
-Figure \ref{results:throughput} shows the relationship between network throughput and distance for a single-hop connection between two android devices. This was tested by sending several moderately large text files between the two devices and measuring the latency in delivery much like in figure \ref{results:message_latency}. Then based off the file length and latency we were able to calculate a rough measurement of network throughput over varying distances. We observed a peak average throughput of almost 1.2 Mbps when the devices were right next to each other at 0 meters. The rest of the measurements roughly reflect the latency values observed in figure \ref{results:message_latency}. Where distances of 1 and 5 meters were similar to 0 meters and throughput severely drops when we tested at 10 meters distance. At that distance we observed around 43 kbps. Which is still fast enough to send any text message or small file, but would definitely struggle with larger files.
+Figure \ref{results:throughput} shows the relationship between network throughput and distance for a single-hop connection between two android devices. This was tested by sending several moderately large text files between the two devices and measuring the latency in delivery much like in figure \ref{results:message_latency}. Then based off the file length and latency we were able to calculate a rough measurement of network throughput over varying distances. We observed a peak average throughput of almost 1.2 Mbps when the devices were right next to each other at 0 meters. The rest of the measurements roughly reflect the latency values observed in figure \ref{results:message_latency}. Where distances of 1 and 5 meters were similar to 0 meters and throughput severely drops when we tested at 10 meters distance. At that distance we observed around 43 kbps. Which is still fast enough to send any text message or small file, but would struggle with larger files. 
 
-Some further results were that our app worked up to at least a distance of 50 meters. We were able to get consistent and quick messages sent both ways but we're unable to test it further. We assume this means our app possesses a similar range to traditional Wi-Fi as it uses the same hardware.
+The important question here is does this throughput meet our soft criteria for sending files, pictures, or videos? Well if we look at the peak case of 1.165 Mbps throughput then our app could successfully send files, picures, and videos of up to 11.65 Mb or 1.456 MB within 10 seconds. Considering that a high-resolution photograph is at least 2MB then this criteria is not being fully met. It could handle smaller files and lower-resolution photographs, but it would take more than 10 seconds to send a higher-resolution photograph or videos.
+
+During our experimentation we also found two further results. One is that we never experienced messages not being delivered after a connection was established. This is because our application uses TCP for communication which we know guarantees reliable delivery with re-transmission. Therefore our last criteria point was being met without any further work from us. The second result is that our app worked up to at least a distance of 50 meters. We were able to get consistent and relatively quick messages sent both ways but were unable to test it further. We assume this means our app possesses a similar range to traditional Wi-Fi as it uses the same hardware.
 
 \section{Conclusion}
 
 % Did our app meet the criteria and requirements we set forth?
 
-% Does our approach of using WiFi-Direct performed better or worse than cellular messaging? Compare our recorded metrics directly against cellular messaging on our phones. 
+When someone sends a message through SMS or Apple's iMessage, the sent data travels from the originating phone to its corresponding cell tower and then through a complex series of intermediate infrastructure nodes before reaching its destination. In general this is appreciated because it supports long-distance messaging to anyone in the world. However, not every message needs to take such a convoluted path. If both the source and destination devices are in the same location within meters of each other then the typical delivery path just increases latency and creates unnecessary network overhead. Especially if both devices are in a location with poor cell service. In this report we investigated one possible solution to this problem by developing a peer-to-peer messaging app for Android that uses Wi-Fi Direct for local communication. The app was developed using Android’s Studio Software Development Kit in Kotlin. We successfully implemented our app on two android phones and were able to test the performance according to several criteria. We discovered the following important results:
 
-% These soft criteria are as follows:
-% \begin{itemize}
-%     \item Able to handle constant activity, fast paced messaging between users.
-%     \item Low latency
-%           \begin{itemize}
-%               \item Less than one second for text messages
-%               \item Less then ten seconds for files, pictures, or videos
-%           \end{itemize}
-%     \item Reliable delivery, data gets delivered unless destination is unreachable.
-% \end{itemize}
+\begin{table}
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        Requirement & Met?\\
+        \hline \hline
+        Able to handle constant, fast paced activity & Yes\\
+        \hline
+        Less than one second latency for text messages & Yes\\
+        \hline
+        Less than ten seconds for files, pictures, or videos & Partially\\
+        \hline
+        Reliable delivery & Yes\\
+        \hline
+    \end{tabular}
+    \caption{Criteria satisfaction}
+    \label{tab:conclusions}
+\end{table}
 
-Based on the results seen in our experimentation we can conclude the following about our application.
+As seen in Table \ref{tab:conclusions}, our application met almost all of our criteria for what constitutes a good messaging app. It also shows that our application is at least comparable to existing cellular messaging when at close range. The only requirement it didn't meet was the latency on larger files. We found that our application could only handle files up to 1.456 MB within 10 seconds. Which isn't enough for some high-resolution photos or videos, but it can still handle smaller files fairly quickly. So overall we found that a messaging application using Wi-Fi Direct performs well for single-hop communication with it currently being unable to support multi-hop communication.
 
 \renewcommand{\refname} {\section{References}}
 \bibliographystyle{acm}
