@@ -4,6 +4,7 @@
 \usepackage{fullpage}
 \usepackage{graphicx}
 \usepackage{parskip}
+\usepackage{url}
 
 \pagestyle{plain}
 
@@ -15,87 +16,107 @@
 
 \maketitle
 
+\tableofcontents
+
+\newpage
+
 \section{Introduction}
-% Motivate the problem;
-% Define/formulate the problem: assumptions, application requirements, goals and non-goals;
-If someone wants to send a message to a friend nearby, the message must travel much farther than the distance between devices. Messages sent through SMS or Apple's iMessage must travel from the originating device through a series of intermediate infrastructure nodes before reaching the destination device. This causes increased latency and unnecessary network overhead. In an increasingly connected (and congested) world - why bother wasting bandwidth on a message to a nearby device that can be sent directly from peer to peer? We aim to solve this issue by proposing and developing a peer-to-peer messaging app for Android using Wi-Fi Direct for multi-hop ad-hoc networking. An application of this nature has far-reaching applications from messaging and networking at an event or conference to emergency communication during a natural disaster. Although security is always an issue with wireless communication, that is out of the scope of this project. The table below shows some preliminary requirements for this proposed solution.
+
+If someone wants to send a message to a friend nearby, the message must travel much farther than the distance between devices. Messages sent through SMS or Apple's iMessage must travel from the originating device through a series of intermediate infrastructure nodes before reaching the destination device. This causes increased latency and unnecessary network overhead.
+
+In an increasingly connected (and congested) world - why bother wasting bandwidth on a message to a nearby device that can be sent directly from peer to peer? We aim to solve this issue by proposing and developing a peer-to-peer messaging app for Android using Wi-Fi Direct. An application of this nature has far-reaching applications from messaging and networking at an event or conference, to emergency communication during a natural disaster where infrastructure may be lacking or damaged. 
+
+\section{Requirements}
+
 \begin{center}
-    \begin{tabular}{| p{0.2\textwidth} | p{0.5\textwidth} |}
+    \begin{tabular}{| p{0.2\textwidth} | p{0.2\textwidth} | p{0.4\textwidth} |}
         \hline
-        Category        & Requirement                                                                                                     \\ \hline
-        Networking      & Connections between two devices shall use Wi-Fi Direct using the Android Wi-Fi P2P API                          \\ \hline
-        Networking      & Devices shall provide routing of messages between source and destination nodes using a to-be-determined routing protocol. \\ \hline
-        Networking      & Devices shall provide acknowledgements when messages are received in order to ensure message delivery           \\ \hline
-        User Experience & Users shall be able to send text and file messages                                                              \\ \hline
-        User Experience & Latency shall be minimized as much as possible when sending messages (ideally within 1 second)                  \\ \hline
-        User Experience & Devices shall save messages offline such that they can be viewed later                                          \\ \hline
-        User Experience & Devices shall show a contact list of other nearby users that a user can start a conversation with               \\ \hline
+        Category        & Name          & Description
+        \\ \hline
+        Networking      & WiFI Direct   & Connections between two devices shall use Wi-Fi Direct using the Android Wi-Fi P2P API
+        \\ \hline
+        Networking      & Ack           & Devices shall provide acknowledgements when messages are received in order to ensure message delivery
+        \\ \hline
+        User Experience & Contents      & Users shall be able to send text and file message
+        \\ \hline
+        User Experience & Latency       & Latency shall be minimized as much as possible when sending messages (ideally within 1 second)
+        \\ \hline
+        User Experience & Storage       & Devices shall save messages offline such that they can be viewed later
+        \\ \hline
+        User Experience & Neighbor List & Devices shall show a contact list of other nearby users that a user can start a conversation with
+        \\ \hline
     \end{tabular}
 \end{center}
 
 \newpage
 
 \section{Related work}
-%\item What has been done before?
-%\item How does your solution compare to them?
 
-\subsection{AirDrop}
+\subsection{Implementations}
+
+\subsubsection{AirDrop}
 
 When it comes to ad hoc networking on mobile devices, AirDrop is probably the most widespread application. It supports sending files to nearby devices, without requiring devices to be connected to the same network. AirDrop operates using both Wi-Fi and Bluetooth \cite{AppleSupport}.
 
-We aim to differ from this product in several regards:
+We differ from this product in several regards:
+
 \begin{enumerate}
-    \item We primarily aim to support messaging. Having file sharing as a back end is a possible implementation to build messaging on, but would need to be extended.
-    \item AirDrop uses iCloud services in order to authenticate users \cite{AppleSupportSecurity}, and additionally only works on Apple devices. We aim to create a de-centralized version that
-          could theoretically be deployed on any platform (although we are only developing the application for Android in the scope of this project).
-    \item AirDrop uses a combination of point-to-point WiFi connections and bluetooth. We aim to only use Ad-Hoc Wi-Fi / Wi-Fi Direct in our implementation. We realize that the technology choice restricts what devices we can connect with (Apple does not support Wi-Fi direct).
+    \item We primarily support messaging. Having file sharing as a back end is a possible implementation to build messaging on, but would need to be extended.
+    \item AirDrop uses iCloud services in order to authenticate users \cite{AppleSupportSecurity}, and additionally only works on Apple devices. We aim to create a de-centralized version that could theoretically be deployed on any platform (although we are only developing the application for Android in the scope of this project).
+    \item AirDrop uses a combination of point-to-point WiFi connections and bluetooth. We aim to use Wi-Fi Direct in our implementation. We realize that the technology choice restricts what devices we can connect with (mainly just in that Apple does not support Wi-Fi direct).
 \end{enumerate}
 
-\subsection{Warpinator}
+\subsubsection{Warpinator}
 
-Warpinator is a file sharing system devloped by the Linux Mint team in order to create an AirDrop like file-sharing system for non-Apple users  \cite{Webster2023linuxmint}. It operates over
-LAN, and supports Android, iOS, Windows, and Linux, and could likely be easily ported to other Unix like systems.
+Warpinator is a file sharing system devloped by the Linux Mint team in order to create an AirDrop like file-sharing system for non-Apple users  \cite{Webster2023linuxmint}. It operates over LAN, and supports Android, iOS, Windows, and Linux, and could likely be easily ported to other Unix like systems.
 
-We aim to differ from this product in two regards:
+We differ from this product in two regards:
+
 \begin{enumerate}
-    \item As in AirDrop, we primarily aim to support messaging
+    \item Warpinator is similar to AirDrop in that it is primarily for file transfer, we primarily aim to support messaging.
     \item Operate using ad-hoc networking to support messaging. Warpinator requires a connection to an existing routed network, and can not operate its own ad-hoc network.
 \end{enumerate}
 
-\subsection{Android Beam}
-Android beam is a discontinued \cite{Cantisano_2022} feature in Android that allowed data to be transfered over NFC \cite{AndroidDevelopers}. Unlike the prior two works, Android Beam did not only support file
-transfer, and was an open interface that applications could use to communicate. Android Beam could provide a reasonable interface for a similar application as ours
-to communicate with, if it were not discontinued and limited to NFC.
+\subsubsection{Android Beam}
 
-We aim to differ from this product in two regards:
+Android beam is a discontinued \cite{Cantisano_2022} feature in Android that allowed data to be transfered over NFC \cite{AndroidDevelopers}. Unlike the prior two works, Android Beam did not only support file transfer, and was an open interface that applications could use to communicate. Android Beam could provide a reasonable interface for a similar application as ours to communicate with, if it were not discontinued and limited to NFC.
+
+We differ from this product in two regards:
+
 \begin{enumerate}
-    \item We aim to use WiFi technologies, rather than NFC, due to the short range limitation of NFC.
+    \item We use WiFi technologies, rather than NFC, due to the short range limitation of NFC.
     \item We are creating an application, rather than an open interface to communicate over.
+\end{enumerate}
+
+\subsection{Bridgefy}
+
+Bridgefy is a messaging app that utilizes bluetooth that is available on Android and IOS \cite{Bridgefy}. It uses mesh networking, so messages can hop over multiple other devices supporting Bridgefy to get the the recipient. Bridgefy also supports end-to-end encryption.
+
+We differ from this product in multiple regards:
+
+\begin{enumerate}
+    \item Bridgefy operates over Bluetooth. We prefer WiFi direct for its potentially longer range, as we do not anticipate that there will be substantial adoption to enable the advantages of mesh networking.
+    \item Bridgefy has encryption and mesh networking considerations, which places it outside the scope of this project.
 \end{enumerate}
 
 \newpage
 
-\subsection{A Totally Decentralized Document Sharing System for Mobile Ad Hoc Networks}
-This paper  \cite{10.1145/1164783.1164805} presents an application for sharing documents in MANETS. The application presented
-is completely unreliant on any form of centralized server or routing algorithms. Documents can be shared in atomic components to different groups
-of nodes, and nodes can modify parts of a document, sharing a tree of the modifications. This application achieves a lot of what we are trying to
-do, except with more routing and versioning complexity than we are seeking. Our goal is simple messaging and possible document sharing with nearby
-nodes, not necessarily using MANET routing algorithms.
+\subsection{Papers}
 
-We aim to differ from this product in two regards:
+\subsubsection{A Totally Decentralized Document Sharing System for Mobile Ad Hoc Networks}
+
+This paper  \cite{10.1145/1164783.1164805} presents an application for sharing documents in MANETS. The application presented is completely unreliant on any form of centralized server or routing algorithms. Documents can be shared in atomic components to different groups of nodes, and nodes can modify parts of a document, sharing a tree of the modifications. This application achieves a lot of what we are trying to do, except with more routing and versioning complexity than we are seeking. Our goal is simple messaging and possible document sharing with nearby nodes, not necessarily using MANET routing algorithms.
+
+We differ from this product in two regards:
 \begin{enumerate}
     \item Our solution aims to target simple messaging and file sharing, rather than the complex sharing and versioning that the application in the paper presents.
     \item We don't intend to use novel or extremely complex routing algorithms such as those used in MANETS, our goal is short range communications within the range of phone antennas however it may be achieved.
 \end{enumerate}
 
-\subsection{Wi-Fi Direct Research - Current Status and Future Perspectives}
-This paper  \cite{WifiDirect} provides an overview of the state of WiFi direct research as of 2017. This doesn't provide an application so
-much as a overview of the network architecture, and the systems in place for device discovery, service discovery, group formation,
-power saving, and security, all of which we anticipate being of some relevance to our implementation of this final project.
+\subsubsection{Wi-Fi Direct Research - Current Status and Future Perspectives}
+This paper  \cite{WifiDirect} provides an overview of the state of WiFi direct research as of 2017. This doesn't provide an application so much as a overview of the network architecture, and the systems in place for device discovery, service discovery, group formation, power saving, and security, all of which we anticipate being of some relevance to our implementation of this final project.
 
-The paper also discusses applications of WiFi direct, including file transfer and emergency communication, which are directly relevant
-to our end goal. It also discusses briefly the usage of WiFi direct in FireChat, which was an application that
-used wireless mesh networking for peer to peer messaging over bluetooth or WiFi.
+The paper also discusses applications of WiFi direct, including file transfer and emergency communication, which are directly relevant to our end goal. It also discusses briefly the usage of WiFi direct in FireChat, which was an application that used wireless mesh networking for peer to peer messaging over bluetooth or WiFi.
 
 % There are some existing apps available for Android and iOS. Many of these apps use Bluetooth
 % https://engage.sinch.com/blog/offline-messaging-apps/ \\
@@ -108,24 +129,39 @@ used wireless mesh networking for peer to peer messaging over bluetooth or WiFi.
 \section{Approach} %(optional)
 %    \item Rationale: Why is it a good idea?
 %     \item Sketch of your approach and design.
+
 Mobile app development, especially for Android, has an extremely wide range of resources on the Internet. The Android platform is well supported by the community and we plan to leverage many online resources for the development of this app. Android provides an existing Wi-Fi Direct library that we use to speed up development. This app was developed using Android's Studio Software Development Kit in Kotlin. For our mobile app to function properly, we used mock-ups of different pages and screens. In the User Interface / User Experience (UI/UX) field, these are called wireframes. We created three wireframes, each showing the sign-in page, nearby users, and the messaging page of the application respectively. The wireframes were created in a free tool called WonderShare and are shown in the image below. These wireframes will guide development of the user interface.\\
+
 \begin{center}
     \includegraphics[scale=0.5]{wireframe.png} \\
 \end{center}
+
 Behind the scenes, this application uses a complex set of functions and internal storage structures. Devices  periodically broadcast beacon frames with routing information, tagged with usernames for each device. When the app is open on a device, it will listen for these beacon frames and update its list of nearby users accordingly. When a message is sent to a peer device, we use TCP for the best reliability. Conversations between users are stored on the device.
 
 \section{Implementation}
+
 As stated earlier in this report, the Ad-Hoc Messaging app was implemented in Kotlin using Android Studio. During development, we discovered that our app requires certain permissions to be given by the device owner. In order to ensure the proper permissions were granted, we added a fourth screen to the UI layout. This permission screen is shown to the user on startup if the app is lacking any permissions. This aids in development as a sanity check that any issues we run into are not permission-related.
+
 \subsection{Front-End}
+
 The front end was developed using Jetpack Compose, a built-in for Android Studio. Jetpack Compose is built around Composables, reusable units of code that compile into visual elements.
+
 There are four separate screens on the app. 
+
 \subsubsection{Permission Screen}
+
 The permission screen is shown in Figure \ref{frontend:screens} at the end of this section. This screen is fairly simple. It shows a message that lets the user know that the app is missing the correct permissions. At the bottom of the page, there is a button that users can click on to be taken to the Android OS permission settings for the app. All users need to do is allow the correct permissions and go back to the app in order to be taken to the sign-in screen. This prevents users (and developers) from using the app without the proper permissions - which would cause errors and a bad user experience.
+
 \subsubsection{Sign-In Screen}
+
 The sign-in screen is shown at the end of this section. Users are presented with the AI-generated logo for this app as well as a text-box to input their desired username. After entering a username, the user can click the sign-in button in order to kick off the back-end processes to start broadcasting frames and looking for other devices nearby.
+
 \subsubsection{User Screen}
+
 After a user clicks the sign-in button on the sign-in screen, many of the backend services are started. Once the back-end processes discover a nearby device running the app, the process adds the discovered device to the UI. The user can select the device in order to initiate a Wi-Fi Direct connection and transition to the chat screen.
+
 \subsubsection{Chat Screen}
+
 Opening the chat screen for a discovered device requires the Wi-Fi Direct connection to be opened and error-free. Users are presented with the local chat history, pulled from the MongoDB database. Users can type and send new messages at any time while inside the chat screen. If a message is successfully sent, the contents will populate as a sent message in the UI. If the message does not successfully send, the user is notified and not added to the database.
 
 \begin{figure}[h]
@@ -278,8 +314,9 @@ Some further results were that our app worked up to at least a distance of 50 me
 %     \item Reliable delivery, data gets delivered unless destination is unreachable.
 % \end{itemize}
 
-Based on the results seen in our experimentation we can conclude the following about our application:
+Based on the results seen in our experimentation we can conclude the following about our application.
 
+\renewcommand{\refname} {\section{References}}
 \bibliographystyle{acm}
 \bibliography{refs}{}
 
