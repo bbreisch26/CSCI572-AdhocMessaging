@@ -84,8 +84,6 @@ We differ from this product in two regards:
     \item We are creating an application, rather than an open interface to communicate over.
 \end{enumerate}
 
-\newpage
-
 \subsection{Bridgefy}
 
 Bridgefy is a messaging app that utilizes bluetooth that is available on Android and IOS \cite{Bridgefy}. It uses mesh networking, so messages can hop over multiple other devices supporting Bridgefy to get the the recipient. Bridgefy also supports end-to-end encryption.
@@ -263,7 +261,7 @@ To gather results we loaded our app onto the two Wi-Fi Direct capable android ph
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=4in]{message_latency_graph.png}
+    \includegraphics[width=3in]{message_latency_graph.png}
     \caption{Experiment 1: Message latency in milliseconds over varying distance in meters}
     \label{results:message_latency}
 \end{figure}
@@ -272,7 +270,7 @@ Figure \ref{results:message_latency} shows the results of this experiment. There
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=4in]{new_user_dicovery_graph.png}
+    \includegraphics[width=3in]{new_user_dicovery_graph.png}
     \caption{Experiment 2: New user discovery latency in seconds over varying distance in meters}
     \label{results:new_user}
 \end{figure}
@@ -281,7 +279,7 @@ Figure \ref{results:new_user} shows the latency from when a new device login occ
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=4in]{dropping_user_latency_graph.png}
+    \includegraphics[width=3in]{dropping_user_latency_graph.png}
     \caption{Experiment 3: Dropping user latency in seconds over varying distance in meters}
     \label{results:dropping_user}
 \end{figure}
@@ -290,7 +288,7 @@ Figure \ref{results:dropping_user} shows the latency between when a user closes 
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=4in]{throughput_graph.png}
+    \includegraphics[width=3in]{throughput_graph.png}
     \caption{Experiment 4: Network throughput in kbps over varying distance in meters}
     \label{results:throughput}
 \end{figure}
@@ -307,7 +305,7 @@ During our experimentation we also found two further results. One is that we nev
 
 When someone sends a message through SMS or Apple's iMessage, the sent data travels from the originating phone to its corresponding cell tower and then through a complex series of intermediate infrastructure nodes before reaching its destination. In general this is appreciated because it supports long-distance messaging to anyone in the world. However, not every message needs to take such a convoluted path. If both the source and destination devices are in the same location within meters of each other then the typical delivery path just increases latency and creates unnecessary network overhead. Especially if both devices are in a location with poor cell service. In this report we investigated one possible solution to this problem by developing a peer-to-peer messaging app for Android that uses Wi-Fi Direct for local communication. The app was developed using Android’s Studio Software Development Kit in Kotlin. We successfully implemented our app on two android phones and were able to test the performance according to several criteria. We discovered the following important results:
 
-\begin{table}
+\begin{table}[h!]
     \centering
     \begin{tabular}{|c|c|}
         \hline
@@ -326,7 +324,7 @@ When someone sends a message through SMS or Apple's iMessage, the sent data trav
     \label{tab:conclusions}
 \end{table}
 
-As seen in Table \ref{tab:conclusions}, our application met almost all of our criteria for what constitutes a good messaging app. It also shows that our application is at least comparable to existing cellular messaging when at close range. The only requirement it didn't meet was the latency on larger files. We found that our application could only handle files up to 1.456 MB within 10 seconds. Which isn't enough for some high-resolution photos or videos, but it can still handle smaller files fairly quickly. So overall we found that a messaging application using Wi-Fi Direct performs well for single-hop communication with it currently being unable to support multi-hop communication.
+As seen in Table \ref{tab:conclusions}, our application met almost all of our criteria for what constitutes a good messaging app. It also shows that our application is comparable to existing cellular messaging when at close range. The only requirement it didn't meet was the latency on larger files. We found that our application could only handle files up to 1.456 MB within 10 seconds. Which isn't enough for some high-resolution photos or videos, but it can still handle smaller files fairly quickly. Overall, this report shows that a messaging application using Wi-Fi Direct is viable for single-hop communication but it is unable to support multi-hop communication. So it does offer a viable alternative to cellular messaging when in close range and would perform better in scenarios where both devices have poor cellular service.
 
 \renewcommand{\refname} {\section{References}}
 \bibliographystyle{acm}
