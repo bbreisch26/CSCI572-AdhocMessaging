@@ -141,45 +141,38 @@ While our initial proposal set out requirements for multi-hop routing and creati
 %      \item What experiments are you going to run?
 \subsection{Scenarios}
 
-We performed all of our evaluation and experimentation on live android smart phones. One of our team members had a spare Wi-Fi Direct compatible android phone and we acquired one more 
-
-
-One of our team members has an android device and we are currently investigating how to emulate more android devices or acquire dummy devices for experimentation. To gain a full picture of our application's performance we plan to test it in the following scenarios:
+We performed all of our evaluation and experimentation on live android smart phones. One of our team members had a spare Wi-Fi Direct compatible android phone and we acquired another such android phone from Best Buy for testing. Since our application directly interacted with the hardware, we were unable to run it on anything but a genuine android phone. This therefore limited our testing to just the two android devices. To gain insight into our application's performance we tested it under the following scenarios:
 
 \begin{itemize}
     \item Single-hop communication
-    \item Multi-hop communication
     \item New user event
     \item Dropping user event
     \item High pace usage
-    \item File messages
-    \item Low distance
-    \item Maximum distance
+    \item File/large messages
+    \item Variable distance
 \end{itemize}
 
-The single-hop communication experiments will be performed with two devices which will have a single connection between them. The multi-hop communication experiments will use at least three devices and test the routing capabilities of the app. We will also test how quickly our solution can adapt to topology changes such as users opening the app or closing the app. That in particular is especially important since people are rarely just using a single app continuously. Typical users will flip quickly between several different apps while using their phone or device. Additionally, we will test the impact of high paced usage on network performance. Some users send messages back and forth as fast as their fingers can type and even do that with multiple different contacts. Most messaging apps also allow for users to send each other multimedia messages or files such as photos and videos. So that capability will be tested as well. Finally, it is always important to study how the physical environment will impact performance. So we will run these experiments at a close distance range and then push it as high as we can go. All of these scenarios will be combined into an array of experiments that we can use to fully capture the performance of our app.
+The single-hop communication experiments were performed with the two android devices having a single connection between them. We also tested how quickly our application can adapt to topology changes such as users opening the app or closing the app. That in particular is especially important since people are rarely just using a single app continuously. Typical users will flip quickly between several different apps while using their phone or device. Additionally, we have tested the impact of high paced usage on network performance. Some users send messages back and forth as fast as their fingers can type and even do that with multiple different contacts. Most messaging apps also allow for users to send each other multimedia messages or files such as photos and videos so that capability has been tested as well. Finally, it is always important to study how the physical environment will impact performance. So we have run experiments at a variety of ranges from essentially 0 meters up to 10 meters. All of these scenarios have been combined into an array of experiments that we used to capture the performance of our app.
 
 %   \item What criteria and metrics are you going to use to evaluate your solutions?
 \subsection{Metrics}
 
-For each experiment we will record the following metrics:
+For each experiment we have recorded the following metrics:
 \begin{itemize}
     \item Throughput
     \item Latency
-    \item Packet loss rate
 \end{itemize}
-The throughput in this case is simply the data transmission rate throughout the whole network. So, all of the messages sent and received over time measured in data per second. The latency has multiple components that will each need to be analyzed individually as well as together. For example, there is latency from route acquisition, processing, potential queuing, transmission, propagation, re-transmission, etc. We will attempt to record as many of the individual components as possible. Finally, the packet loss rate is simply the rate at which a packet transmission fails and a re-transmission is required.
+The throughput in this case is simply the data transmission rate between the two devices. So, all of the messages sent and received over a time time period measured in bits per second. The latency here depends on the situation, but in terms of messages it simply means the delay from when a message is sent on one device to when it is completely received on the other. We had originally hoped to decompose the latency into different components such as route acquisition, processing, potential queuing, transmission, propagation, re-transmission, and etc but all of those details are abstracted away in our implementation as the API handles it and functions as a black box.
 
 \subsection{Criteria}
 
-There are two key results we are looking for by performing these experiments. The first is comparing our app to other existing solutions. We want to see if our approach of using WiFi-Direct performs better or worse than the approaches detailed in the related work section. Furthermore, we want to analyze specific areas and metrics so as to conclude the pros and cons of the different technologies. The second result is if our solution meets the user's needs. Does it have the necessary throughput, latency, and reliability to provide a good experience for the casual user? That result will tell us whether or not our solution is usable and functional for the problem.
+There are two key results we were looking for when performing these experiments. The first was to compare our app to other existing solutions. Specifically, we wanted to see if our approach of using WiFi-Direct performed better or worse than cellular messaging which is widely accepted and used. The second result is to discern if our solution meets the user's needs. Does it have the necessary throughput, latency, and reliability to provide a good experience for the casual user? That result tells us whether or not our solution is usable and functional.
 
-The criteria for our first result is fairly straightforward. We will simply compare our recorded metrics directs against the best existing solution we can find. This will allow us to compare and contrast the different approaches directly. On the other hand, the criteria for our second result is much less straightforward. There is no benchmark for the minimum performance required on a messaging app. So we will evaluate the app against our own defined criteria of what is needed for a "good user experience".
+The criteria for our first result is fairly straightforward. We simply compared our recorded metrics directly against cellular messaging on our phones. On the other hand, the criteria for our second result was much less straightforward. There is no benchmark for the minimum performance required on a messaging app. So we evaluated the app against our own defined criteria of what is needed for a "good user experience".
 
 These soft criteria are as follows:
 \begin{itemize}
-    \item Able to handle constant activity, fast paced messaging between multiple pairs of users.
-    \item Scales to a large number of users, at least 10 in a small area.
+    \item Able to handle constant activity, fast paced messaging between users.
     \item Low latency
           \begin{itemize}
               \item Less than one second for text messages
@@ -188,16 +181,57 @@ These soft criteria are as follows:
     \item Reliable delivery, data gets delivered unless destination is unreachable.
 \end{itemize}
 These are the basic requirements for any messaging app to be useful. If any one of these are missing then the user experience is miserable.
-A messaging app needs to keep up with even the fastest typer. We can put a character limit to restrict total message size, but that wouldn't stop a user from sending many large messages in quick succession. Therefore, it is important that the app can handle such usage. One speedy user shouldn't be able to cause network delay. We will need to find out how fast a person can send out messages and then use that as a throughput threshold for app speed.
-
-Scalability is the next concern. If users can't send or receive messages in a crowded environment then the app is not very useful. Settings such as a school, apartment complex, or office may have many participating users trying to use the app at once. More participating devices in the network obviously increases the total network bandwidth, but does that increase in bandwidth outpace the increase in required throughput? We don't have the equipment required to test a truly large scale deployment of our app, but we can still analyze the impact of more participating devices. Then by weighing the increase in both bandwidth and throughput, we can estimate how well the application will scale.
+A messaging app needs to keep up with even the fastest typing user. We can put a character limit to restrict total message size, but that wouldn't stop a user from sending many large messages in quick succession. Therefore, it is important that the app can handle such usage. One speedy user shouldn't be able to cause network delay. We were able to manually test this ourselves by sending out messages as fast as possible and seeing if we observed an increase in network latency.
 
 Since our app sends messages locally to a destination, rather than traveling through a complex network of infrastructure nodes, users will expect it to be very quick. Therefore, low latency is also a requirement. Nobody likes to wait for something as simple as a message to send. Especially when some conversations are time sensitive. So the text messages themselves should send very quickly, with a small wait required for larger files.
+
 Finally, messages need to be delivered. When a user sends a message they expect it to actually reach the destination. If that promise isn't upheld then that can cause confusion and frustration amongst users. If the destination is unreachable then the sending user needs to be alerted of this. This is a potential problem for our app as users could be hopping on and off the app at a rapid pace.
 
 \subsection{Results}
 
+To gather results we loaded our app onto the two Wi-Fi Direct capable android phones. We kept one of the phones hooked up to a laptop so we could collect its recorded logs for exact timing information. Then we proceeded to run each of the following experiments 10 times and average the outcomes. That is what has been graphed in the following figures.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=4in]{message_latency_graph.png}
+    \caption{Message latency in milliseconds over varying distance in meters}
+    \label{results:message_latency}
+\end{figure}
+
+Figure \ref{results:message_latency} shows the one-way latency of sending a message over a single-hop using our application. There are two important results from this figure. The first is that distance significantly impacts latency. We can see that within 5 meters of distance the latency is below 100 ms or 0.1 seconds. This is extremely quick and basically instantaneous to the user. However, when we tested at a higher distance of 10 meters the latency immediately skyrocketed to a little over 900 ms or 0.9 seconds. This really emphasizes that Wi-Fi Direct is meant for local communication. The second result is that despite being sensitive to distance, this application is still extremely quick. Even our worst latency measurement is still below a second. It is also important to note that these latency measurements were collected from sending both short text messages and also larger amounts of data up to 5 KB. When testing, we observed that the size of the message contents didn't significantly impact latency. Which tells us that most of our latency isn't from transmission but actually is with connecting the network sockets.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=4in]{new_user_dicovery_graph.png}
+    \caption{New user discovery latency in seconds over varying distance in meters}
+    \label{results:new_user}
+\end{figure}
+
+Figure \ref{results:new_user} shows the latency from when a new device login occurs to when the other devices discover the new device. In the context of our application this represents the delay that a user has to endure after opening the app until other users notice that they are available to message with. This was tested by having one android device completely logged in and listening for peer devices running the app then starting the app on the other phone and recording the delay till the first phone notices the second one. As seen in the figure this metric has an interesting relationship with distance. The fastest new user discovery occurs when the devices are separated by 5 meters and it increases with any change with distance from that point. As mentioned in our implementation section the user discovery relies on service advertisements being sent out from each device running the app. When the devices are too close it seems to present some interference or something similar which delays user discovery.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=4in]{dropping_user_latency_graph.png}
+    \caption{Dropping user latency in seconds over varying distance in meters}
+    \label{results:dropping_user}
+\end{figure}
+
+Figure \ref{results:dropping_user} shows the latency between when a user closes the app and when other devices notice that device is no longer available for connection. This is represented in our app by having that user disappear from other device's "Nearby Users" screen. There is no strong relationship between distance and this metric as it varies without any real pattern. The main takeaway from this is that the delay here is extremely high. It takes around 69 seconds for other devices to alert our application that a nearby user has dropped out of range or stopped using the app. This may be because the protocol is very tolerant to intermittent disconnections and wireless transmission issues, so it allows a certain grace period of not hearing any service advertisement messages before it determines that the peer device is gone. In the case where a user is trying to use multiple apps at once this delay could actually be helpful. However it is important to note that if two devices are directly connected in a Wi-Fi Direct group and one leaves the group then the other device is immediately alerted that they've lost connection.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=4in]{throughput_graph.png}
+    \caption{Network throughput in kbps over varying distance in meters}
+    \label{results:throughput}
+\end{figure}
+
+Figure \ref{results:throughput} shows the relationship between network throughput and distance for a single-hop connection between two android devices. This was tested by sending several moderately large text files between the two devices and measuring the latency in delivery much like in figure \ref{results:message_latency}. Then based off the file length and latency we were able to calculate a rough measurement of network throughput over varying distances. We observed a peak average throughput of almost 1.2 Mbps when the devices were right next to each other at 0 meters. The rest of the measurements roughly reflect the latency values observed in figure \ref{results:message_latency}. Where distances of 1 and 5 meters were similar to 0 meters and throughput severely drops when we tested at 10 meters distance. At that distance we observed around 43 kbps. Which is still fast enough to send any text message or small file, but would definitely struggle with larger files.
+
+Some further results were that our app worked up to at least a distance of 50 meters. We were able to get consistent and quick messages sent both ways but we're unable to test it further. We assume this means our app possesses a similar range to traditional Wi-Fi as it uses the same hardware.
+
 \section{Conclusion}
+
+% Did our app meet the criteria and requirements we set forth?
 
 \bibliographystyle{acm}
 \bibliography{refs}{}
