@@ -26,7 +26,7 @@ If someone wants to send a message to a friend nearby, the message must travel m
         Networking      & Connections between two devices shall use Wi-Fi Direct using the Android Wi-Fi P2P API                          \\ \hline
         Networking      & Devices shall provide routing of messages between source and destination nodes using a to-be-determined routing protocol. \\ \hline
         Networking      & Devices shall provide acknowledgements when messages are received in order to ensure message delivery           \\ \hline
-        User Experiendce & Users shall be able to send text and file messages                                                              \\ \hline
+        User Experience & Users shall be able to send text and file messages                                                              \\ \hline
         User Experience & Latency shall be minimized as much as possible when sending messages (ideally within 1 second)                  \\ \hline
         User Experience & Devices shall save messages offline such that they can be viewed later                                          \\ \hline
         User Experience & Devices shall show a contact list of other nearby users that a user can start a conversation with               \\ \hline
@@ -117,31 +117,63 @@ Behind the scenes, this application uses a complex set of functions and internal
 \section{Implementation}
 As stated earlier in this report, the Ad-Hoc Messaging app was implemented in Kotlin using Android Studio. During development, we discovered that our app requires certain permissions to be given by the device owner. In order to ensure the proper permissions were granted, we added a fourth screen to the UI layout. This permission screen is shown to the user on startup if the app is lacking any permissions. This aids in development as a sanity check that any issues we run into are not permission-related.
 \subsection{Front-End}
-The front end was developed using the composable model, reusable units of code that compile into visual elements.
+The front end was developed using Jetpack Compose, a built-in for Android Studio. Jetpack Compose is built around Composables, reusable units of code that compile into visual elements.
 There are four separate screens on the app. 
 \subsubsection{Permission Screen}
-The permission screen is shown at the end of this section. This screen is fairly simple. It shows a message that lets the user know that the app is missing the correct permissions. At the bottom of the page, there is a button that users can click on to be taken to the Android OS permission screen for the app. All users need to do is allow the correct permissions and go back to the app in order to be taken to the sign-in screen.
+The permission screen is shown in Figure \ref{frontend:screens} at the end of this section. This screen is fairly simple. It shows a message that lets the user know that the app is missing the correct permissions. At the bottom of the page, there is a button that users can click on to be taken to the Android OS permission settings for the app. All users need to do is allow the correct permissions and go back to the app in order to be taken to the sign-in screen. This prevents users (and developers) from using the app without the proper permissions - which would cause errors and a bad user experience.
 \subsubsection{Sign-In Screen}
 The sign-in screen is shown at the end of this section. Users are presented with the AI-generated logo for this app as well as a text-box to input their desired username. After entering a username, the user can click the sign-in button in order to kick off the back-end processes to start broadcasting frames and looking for other devices nearby.
 \subsubsection{User Screen}
 After a user clicks the sign-in button on the sign-in screen, many of the backend services are started. Once the back-end processes discover a nearby device running the app, the process adds the discovered device to the UI. The user can select the device in order to initiate a Wi-Fi Direct connection and transition to the chat screen.
 \subsubsection{Chat Screen}
 Opening the chat screen for a discovered device requires the Wi-Fi Direct connection to be opened and error-free. Users are presented with the local chat history, pulled from the MongoDB database. Users can type and send new messages at any time while inside the chat screen. If a message is successfully sent, the contents will populate as a sent message in the UI. If the message does not successfully send, the user is notified and not added to the database.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=6.5in]{screens.png}
+    \caption{App Screens (Dark Mode)}
+    \label{frontend:screens}
+\end{figure}
+
 \subsection{Back-End}
+The back-end of this app is made up of many different services. These are required to run in separate threads according to the Android API guidelines. The app is built around these services, requiring callbacks and asynchronous functions for much of the code. This increased the complexity of the code and lengthened development time.
 \subsubsection{Service Advertisement}
+After the user logs in, the app must broadcast that the device is ready for new connections. In order to do this, the Android Wi-Fi Direct API uses Domain Name Service - Service Discovery (DNS-SD). DNS-SD is an established protocol that allows for zero-configuration wide area service discovery. Other devices that have the app open listen for these DNS-SD broadcasts, and update their list of available devices accordingly. This requires a separate thread running on the device in order to check for updates in the background.
 \subsubsection{Connection Protocol}
+When a Wi-Fi Direct connection is initiated by a device, the other device is prompted with a system-level modal pop-up asking for permission to connect. When permission is allowed, both devices are connected in what Android's API calls a group. The initiating device is now the group owner, with a fixed IP address of 192.168.49.1. The other device is a group member, with a randomized last octet of the IP address, 192.168.49.1 - 192.168.49.255. This presents an issue for the group owner, who does not know the IP address of the other device. In order to fix that, when a device accepts an incoming Wi-Fi Direct connection, it will immediately send a HELLO message to the group owner, accompanied by the device's IP address. This HELLO message ensures both devices have each other's IP address. With addresses shared, devices are free to now send messages with each other. Figure \ref{backend:proto} below shows the connection process.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=5in]{proto.png}
+    \caption{Connection Protocol w/ HELLO}
+    \label{backend:proto}
+\end{figure}
+
 \subsubsection{Message Storage}
+When messages are sent and received, they must be stored locally somewhere. In order to achieve this, the app uses a local SQLite database. Rather than actually implement our own SQLite database and objects in the program, we use Android's Room API which already implements SQLite. The app stores the content of the message, the timestamp of when it was sent/received, and the username of the user. It also stores whether the message was sent from the device, used for drawing the chat screen correctly. Table \ref{backend:sqlite} below shows the database schema used. 
+\begin{table}[h]
+    \begin{center}
+    \begin{tabular}{|c|c|} \hline
+        Field & Data type \\ \hline
+        Chat ID & Integer \\
+        Contact Name & String \\
+        Source-Is-Me & Boolean \\
+        Contents & String \\ \hline
+    \end{tabular}
+    \end{center}
+    \caption{SQLite Database Schema}
+    \label{backend:sqlite}
+\end{table}
 
-\subsection{Multihop}
-While our initial proposal set out requirements for multi-hop routing and creating a mesh network, we determined early on that this is not feasible. Because we are restricted to using Android's Wi-Fi Direct API, it would not make sense to do multi-hop routing using Wi-Fi Direct. We found that the association latency to connect between clients is much too slow in order to accommodate any kind of mesh networking.
 
-
+\subsection{Multi-Hop}
+While our initial proposal set out requirements for multi-hop routing and creating a mesh network, we determined early on that this is not feasible. Because we are restricted to using Android's Wi-Fi Direct API, it would not make sense to do multi-hop routing using Wi-Fi Direct. We found that the association latency between clients is much too slow in order to accommodate any kind of mesh networking. For this reason, combined with the limited time horizon of the project, we decided not to pursue mesh networking using Wi-Fi Direct. We were also limited by access to only two Android phones that would have made testing a mesh Wi-Fi Direct network very challenging.
 
 \section{Performance Evaluation}
 %      \item What experiments are you going to run?
 \subsection{Scenarios}
 
-We performed all of our evaluation and experimentation on live android smart phones. One of our team members had a spare Wi-Fi Direct compatible android phone and we acquired another such android phone from Best Buy for testing. Since our application directly interacted with the hardware, we were unable to run it on anything but a genuine android phone. This therefore limited our testing to just the two android devices. To gain insight into our application's performance we tested it under the following scenarios:
+We performed all of our evaluation and experimentation on live android smart phones. One of our team members had a spare Wi-Fi Direct compatible Android phone and we acquired another such Android phone from Best Buy for testing. Since our application directly interacted with the hardware, we were unable to run it on anything but a genuine android phone. This therefore limited our testing to just the two android devices. To gain insight into our application's performance we tested it under the following scenarios:
 
 \begin{itemize}
     \item Single-hop communication
@@ -232,6 +264,21 @@ Some further results were that our app worked up to at least a distance of 50 me
 \section{Conclusion}
 
 % Did our app meet the criteria and requirements we set forth?
+
+% Does our approach of using WiFi-Direct performed better or worse than cellular messaging? Compare our recorded metrics directly against cellular messaging on our phones. 
+
+% These soft criteria are as follows:
+% \begin{itemize}
+%     \item Able to handle constant activity, fast paced messaging between users.
+%     \item Low latency
+%           \begin{itemize}
+%               \item Less than one second for text messages
+%               \item Less then ten seconds for files, pictures, or videos
+%           \end{itemize}
+%     \item Reliable delivery, data gets delivered unless destination is unreachable.
+% \end{itemize}
+
+Based on the results seen in our experimentation we can conclude the following about our application:
 
 \bibliographystyle{acm}
 \bibliography{refs}{}
